@@ -9,8 +9,6 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 
-import aurelienribon.slidinglayout.SLAnimator;
-
 public class PayPane extends JPanel{
 	
 	public static boolean payWorking = false;
@@ -31,9 +29,5 @@ public class PayPane extends JPanel{
 		this.add(label);
 		
 	}
-	
-	public static class Accessor extends SLAnimator.ComponentAccessor{
-		
-	}
-	
+
 }

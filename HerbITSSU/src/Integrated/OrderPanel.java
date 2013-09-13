@@ -1,17 +1,21 @@
 package Integrated;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
+import AnimationComponent.AniButton;
+import aurelienribon.slidinglayout.SLAnimator;
 import aurelienribon.slidinglayout.SLConfig;
 import aurelienribon.slidinglayout.SLKeyframe;
 import aurelienribon.slidinglayout.SLPanel;
 import aurelienribon.slidinglayout.SLSide;
-
-import AnimationComponent.AniButton;
-
-import java.awt.event.*;
 
 
 
@@ -69,7 +73,7 @@ class OrderPanel extends JPanel {
 	
 	private AniButton payButton = new AniButton("결제");
 	private AniButton cancel = new AniButton("취소");
-	private final SLPanel basePanel;
+	private final SLPanel basePanel = new SLPanel();
 	private SLConfig payCfg,payBackCfg;
 	private PayPane payPane = new PayPane("결제창 샘플");
 	
@@ -97,11 +101,12 @@ class OrderPanel extends JPanel {
 	private JPanel cardCash;					//버튼두개의 패널
 	
 	
-	public OrderPanel( OrderSystem os , SLPanel basePanel, SLConfig payCfg, SLConfig payBackCfg) {
+	public OrderPanel( OrderSystem os ) {
 		this.os = os;
-		this.basePanel = basePanel;
-		this.payCfg = os.getPayCfg();
-		this.payBackCfg = os.getPayBackCfg();
+		
+		this.setLayout(new BorderLayout());
+		this.add(basePanel, BorderLayout.CENTER);
+		JPanel pane = new JPanel();
 		
 		/* 테이블 레이아웃 세팅 시작 */
 		orderListTable = new JTable();
@@ -114,11 +119,11 @@ class OrderPanel extends JPanel {
 		orderListTableScroll
 				.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		/* 테이블 레이아웃 세팅 끝 */
-		this.setLayout(new BorderLayout());
-		this.add(orderListTableScroll, BorderLayout.EAST);
+		pane.setLayout(new BorderLayout());
+		pane.add(orderListTableScroll, BorderLayout.EAST);
 		leftPanel = new JPanel();
 		cardCash = new JPanel();
-		this.add(cardCash, BorderLayout.SOUTH);
+		pane.add(cardCash, BorderLayout.SOUTH);
 		/* 픽셀작업 필요한부분 시작 PIXEL*/
 		leftPanel.setLayout( new ModifiedFlowLayout() );
 		cardCash.setLayout(new FlowLayout());
@@ -129,7 +134,7 @@ class OrderPanel extends JPanel {
 			.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		menuListScroll
 			.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		this.add(menuListScroll, BorderLayout.CENTER);
+		pane.add(menuListScroll, BorderLayout.CENTER);
 		for( int tmp=0; tmp<menuList.length; tmp++)
 		{
 			menuBtn[tmp] = new JButton(menuList[tmp]);
@@ -143,28 +148,28 @@ class OrderPanel extends JPanel {
 		cardCash.add(payButton);
 		
 		cancel.setAction(payBackAction);
-
-		/*
-		cancel = new JButton("취소");
-		cancel.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				for(int x=0 ; x < data.length ; x++) {
-					data[x][0] = "";
-					data[x][1] = "";
-					data[x][2] = "";
-					data[x][3] = "";
-				}
-				currentNumber=0;
-				orderListTableModel.setDataVector(data, columnNames);
-			}
-			
-		});*/
+		
 		cardCash.add(cancel);
 		/* 픽셀작업 필요한 부분 3 끝*/
 		
 		orderListTableModel.setDataVector(data, columnNames);
+		
+		basePanel.add(pane);
+		basePanel.add(payPane);
+		
+		payCfg = new SLConfig(basePanel)
+		.gap(10, 10)
+		.row(1f).col(5f).col(1f)
+		.place(0, 0, pane)
+		.place(0, 1, payPane);
+
+		payBackCfg = new SLConfig(basePanel)
+		.gap(10, 10)
+		.row(1f).col(1f)
+		.place(0, 0, pane);
+		
+		basePanel.setTweenManager(SLAnimator.createTweenManager());
+		basePanel.initialize(payBackCfg);
 		
 	}
 	public void dataUpdate() {			//수정시 변경되어야할 부분
@@ -201,11 +206,10 @@ class OrderPanel extends JPanel {
 	
 	public PayPane getPayPane(){
 		return this.payPane;
-	}
+	}	
 	
 	public void setCfg(){
-		this.payCfg = os.getPayCfg();
-		this.payBackCfg = os.getPayBackCfg();
+		;
 	}
 	
 	public void payActionPush(){
@@ -216,4 +220,7 @@ class OrderPanel extends JPanel {
 		this.cancel.getAniAction().run();
 	}
 	
+	public static class Accessor extends SLAnimator.ComponentAccessor{
+		
+	}
 }

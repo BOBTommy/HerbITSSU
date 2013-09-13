@@ -7,7 +7,7 @@ public class OrderTester {
 	static OrderSystem os;
 	public static void main(String args[] )
 	{
-		Tween.registerAccessor(OrderSystem.class, new FirstPanel.Accessor());
+		Tween.registerAccessor(OrderPanel.class, new OrderPanel.Accessor());
 		SLAnimator.start();
 		
 		os = new OrderSystem();

@@ -34,6 +34,9 @@ commons-math-2.2
 	=> 이와 관련해 StoreGraphPanel과 DateUtil Class가 추가됨
 	StoreGraphPanel은 paint 메소드의 Graphic Instance를 이용하여 그래프를 그림
 	DateUtil은 String/Long/Usertype/Calendar 등의 다양한 날짜-시간 정보를 상호 변환
+2. 결제창 PayPane을 TabPane 내부로 가져옴 (BasePanel의 위치를 바꿈으로써 가능함)
+	=> 추후 다른 패널(재고관리나 관리자 패널에서도 응용 가능, 동시에 2개 이상의 SLPanel Animation도 가능한것 확인했음)
+	다음 회의나 언젠가 만나면 알랴줌
 
 ------------------------------------------------------------------------
 
