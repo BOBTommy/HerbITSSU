@@ -13,6 +13,8 @@ Project ssuherb
  13.09.04		김준호
  13.09.04		김준호		Ver 1.0.0
  13.09.07		진민규		Ver 1.1.0
+ 13.09.07		김준호		Ver 1.1.1
+ 13.09.13		진민규		Ver 1.1.2
 
 
  필요 라이브러리:
@@ -25,6 +27,15 @@ Jama-1.0.3
 commons-math-2.2
 
 ############################# 패치 노트 ####################################
+
+13.09.13	Ver 1.1.2
+
+1. StorePanel에서 DB를 기준으로 Graph를 그려 Visualizing 해주는 기능 추가
+	=> 이와 관련해 StoreGraphPanel과 DateUtil Class가 추가됨
+	StoreGraphPanel은 paint 메소드의 Graphic Instance를 이용하여 그래프를 그림
+	DateUtil은 String/Long/Usertype/Calendar 등의 다양한 날짜-시간 정보를 상호 변환
+
+------------------------------------------------------------------------
 
 13.09.07	Ver 1.1.1
 

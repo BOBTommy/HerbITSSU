@@ -1,18 +1,22 @@
 package Integrated;
+import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
-import java.util.Random;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.JSplitPane;
 
 
 class StorePanel extends JPanel{
 	OrderSystem os;
 	
+	private JSplitPane masterPanel = new JSplitPane();
+	private JPanel inventoryPanel = new JPanel();
+	private StoreGraphPanel inventoryGraph = new StoreGraphPanel();
 	private String inventoryList[] = new String[20]; //Temporary 20 restricted
 	private JButton inventoryBtn[] = new JButton[inventoryList.length];
 	
@@ -22,24 +26,38 @@ class StorePanel extends JPanel{
 		public void actionPerformed(ActionEvent e) {
 			try {
 				String name = ((JButton)e.getSource()).getText();
-				String sql = "select * from herb_invenlog where "
-						+ "invenlog_inventory_id = '" + name.substring(6) + "'";
+				String sql = "select * from herb_inventory where "
+						+ "inventory_name = '" + name + "'";
 				java.sql.ResultSet rs = os.db.exec(sql);
+				rs.next();
 				
-				String DATE_FORMAT = "yyyy-MM-dd kk:mm:ss";
-				SimpleDateFormat format = new SimpleDateFormat(
-						DATE_FORMAT);
+				sql = "select * from herb_invenlog where "
+						+ "invenlog_inventory_id = '" + rs.getInt("inventory_id") + "' "
+						+ "ORDER BY invenlog_regdate DESC";
+				rs = os.db.exec(sql);
+				
+				SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss");
+				SimpleDateFormat format2 = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss");
 				
 				System.out.println(name + " -----------------------------");
-				while (rs.next()) {
+				int num = 10;
+				int cnt = 0;
+				int tmpPoints[] = new int[num];
+				String tmpLabels[] = new String[num];
+				while (rs.next() && (num-cnt > 0)) {
 					System.out.println(
 							rs.getInt("invenlog_id") + "|"
 							+ rs.getInt("invenlog_inventory_id")	+ "|"
 							+ rs.getInt("invenlog_value")+ "|"
-							+ format.parse(rs.getString("invenlog_regdate"),
-									new ParsePosition(0))
+							+ DateUtil.convTimeValueToUserTypedString(DateUtil.convUserTypedStringToTimeValue(rs.getString("invenlog_regdate"), "yyyy-MM-dd kk:mm:ss"), "MM-dd")
 							);
+					
+					tmpLabels[cnt] = DateUtil.convTimeValueToUserTypedString(DateUtil.convUserTypedStringToTimeValue(rs.getString("invenlog_regdate"), "yyyy-MM-dd kk:mm:ss"), "MM-dd");
+					tmpPoints[cnt] = rs.getInt("invenlog_value");
+					cnt++;
 				}
+				
+				inventoryGraph.setPoints(tmpPoints, tmpLabels);
 			} catch (SQLException sqle) {
 				// TODO Auto-generated catch block
 				sqle.printStackTrace();
@@ -84,7 +102,7 @@ class StorePanel extends JPanel{
 			while (rs.next()) {
 				inventoryBtn[cnt] = new JButton(rs.getString("inventory_name"));
 				inventoryBtn[cnt].addActionListener(new inventoryListener());
-				this.add(inventoryBtn[cnt]);
+				inventoryPanel.add(inventoryBtn[cnt]);
 				
 				System.out.println(
 						rs.getInt("inventory_id") + "|"
@@ -117,6 +135,16 @@ class StorePanel extends JPanel{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		this.setLayout(new BorderLayout());
+		
+		masterPanel.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
+		masterPanel.setDividerSize(1);
+		masterPanel.setDividerLocation(300);
+		masterPanel.setLeftComponent(inventoryPanel);
+		masterPanel.setRightComponent(inventoryGraph);
+		
+		this.add(masterPanel, BorderLayout.CENTER);
 	}
 	public void dataUpdate() {
 		
