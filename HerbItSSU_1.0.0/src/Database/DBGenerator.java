@@ -12,8 +12,8 @@ import java.util.LinkedList;
 public class DBGenerator {
 	// HerbMenuTable 클래스: 테이블 내용을 가지는 클래스
 		 		
-	   // private static String jdbcUrl = "jdbc:mysql://203.253.20.207:3306/herb?characterEncoding=utf8";// 사용하는 데이터베이스명과 인코딩을 포함한 url
-	    private static String jdbcUrl = "jdbc:mysql://192.168.32.148:3306/herb?characterEncoding=utf8";// 사용하는 데이터베이스명과 인코딩을 포함한 url
+	    private static String jdbcUrl = "jdbc:mysql://203.253.20.207:3306/herb?characterEncoding=utf8";// 사용하는 데이터베이스명과 인코딩을 포함한 url
+	   // private static String jdbcUrl = "jdbc:mysql://192.168.32.148:3306/herb?characterEncoding=utf8";// 사용하는 데이터베이스명과 인코딩을 포함한 url
 	    private static String userId = "itssu";// 사용자계정
 	    private static String userPass = "ssuherb";// 사용자 패스워드
         private java.sql.Connection conn = null;

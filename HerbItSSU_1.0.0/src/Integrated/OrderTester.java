@@ -1,6 +1,5 @@
 package Integrated;
 
-import HerbFrame.FirstPanel;
 import aurelienribon.slidinglayout.SLAnimator;
 import aurelienribon.tweenengine.Tween;
 
