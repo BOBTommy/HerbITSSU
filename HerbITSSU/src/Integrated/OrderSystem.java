@@ -51,8 +51,6 @@ class OrderSystem extends JFrame{
 		HerbPane pane = createTabbedPane();	//탭팬을 생성하여 컨텐트팬에 부착한다.
 		contentPane.add(pane,BorderLayout.CENTER);
 		
-		orderPanel.setCfg();
-		
 		setSize(800, 600);				//사이즈를 설정한다.
 		setVisible(true);				//화면에 보이도록 설정한다.
 		

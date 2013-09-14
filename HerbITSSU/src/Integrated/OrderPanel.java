@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
@@ -71,8 +72,8 @@ class OrderPanel extends JPanel {
 	
 	OrderSystem os;
 	
-	private AniButton payButton = new AniButton("결제");
-	private AniButton cancel = new AniButton("취소");
+	private AniButton payButton = new AniButton("결제하기");
+	private AniButton cancel = new AniButton("결제취소");
 	private final SLPanel basePanel = new SLPanel();
 	private SLConfig payCfg,payBackCfg;
 	private PayPane payPane = new PayPane("결제창 샘플");
@@ -97,16 +98,33 @@ class OrderPanel extends JPanel {
 	JButton cash, card;
 	private String columnNames[] = { "메뉴명", "수량", "단가", "메뉴별 합계"};
 	/* data[][0]: 메뉴명, data[][1]: 주문수량, data[][2]: 단가, data[][3]: 메뉴주문수량별합계*/
-	private JPanel leftPanel;					//PIXEL 설정
+	private JPanel categoryPanel, menuPanel;					//PIXEL 설정
 	private JPanel cardCash;					//버튼두개의 패널
+	private JPanel pane;
 	
 	
 	public OrderPanel( OrderSystem os ) {
 		this.os = os;
 		
+		categoryPanel = new JPanel();
+		menuPanel = new JPanel();
+		cardCash = new JPanel();
+		pane = new JPanel();
+		
 		this.setLayout(new BorderLayout());
-		this.add(basePanel, BorderLayout.CENTER);
-		JPanel pane = new JPanel();
+		pane.setLayout(new BorderLayout());
+		//pane.add(basePanel, BorderLayout.CENTER);
+		//pane.add(cardCash, BorderLayout.SOUTH);
+		
+		JSplitPane splitPane = new JSplitPane(currentNumber, categoryPanel, basePanel);
+		splitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
+		splitPane.setDividerSize(1);
+		splitPane.setDividerLocation(100);
+		splitPane.setLeftComponent(categoryPanel);
+		splitPane.setRightComponent(basePanel);
+		
+		this.add(splitPane, BorderLayout.CENTER);
+		
 		
 		/* 테이블 레이아웃 세팅 시작 */
 		orderListTable = new JTable();
@@ -118,55 +136,53 @@ class OrderPanel extends JPanel {
 				.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		orderListTableScroll
 				.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		/* 테이블 레이아웃 세팅 끝 */
-		pane.setLayout(new BorderLayout());
-		pane.add(orderListTableScroll, BorderLayout.EAST);
-		leftPanel = new JPanel();
-		cardCash = new JPanel();
-		pane.add(cardCash, BorderLayout.SOUTH);
+
 		/* 픽셀작업 필요한부분 시작 PIXEL*/
-		leftPanel.setLayout( new ModifiedFlowLayout() );
+		menuPanel.setLayout( new ModifiedFlowLayout() );
 		cardCash.setLayout(new FlowLayout());
 		/* 픽셀작업 필요한부분 끝 PIXEL*/
 		
-		menuListScroll = new JScrollPane(leftPanel);
+		menuListScroll = new JScrollPane(menuPanel);
 		menuListScroll
 			.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		menuListScroll
 			.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		pane.add(menuListScroll, BorderLayout.CENTER);
+		
+		for( int tmp=0; tmp<menuList.length; tmp++)
+		{
+			categoryPanel.add(new JButton("Cate-" + menuList[tmp]));
+		}
+		
 		for( int tmp=0; tmp<menuList.length; tmp++)
 		{
 			menuBtn[tmp] = new JButton(menuList[tmp]);
 			menuBtn[tmp].addActionListener(new menuListener());
 			/* 픽셀작업 필요한 부분 2 */
-			leftPanel.add(menuBtn[tmp]);
+			menuPanel.add(menuBtn[tmp]);
 			/* 픽셀작업 필요한부분 2끝 */
 		}
 		
 		payButton.setAction(payAction);
-		cardCash.add(payButton);
+		//cardCash.add(payButton);
+		menuPanel.add(payButton);
 		
 		cancel.setAction(payBackAction);
-		
-		cardCash.add(cancel);
-		/* 픽셀작업 필요한 부분 3 끝*/
+		//cardCash.add(cancel);
+		payPane.add(cancel);
 		
 		orderListTableModel.setDataVector(data, columnNames);
 		
-		basePanel.add(pane);
-		basePanel.add(payPane);
-		
 		payCfg = new SLConfig(basePanel)
 		.gap(10, 10)
-		.row(1f).col(5f).col(1f)
-		.place(0, 0, pane)
+		.row(1f).col(2f).col(1f)
+		.place(0, 0, orderListTableScroll)
 		.place(0, 1, payPane);
 
 		payBackCfg = new SLConfig(basePanel)
 		.gap(10, 10)
-		.row(1f).col(1f)
-		.place(0, 0, pane);
+		.row(1f).col(1f).col(2f)
+		.place(0, 0, menuListScroll)
+		.place(0, 1, orderListTableScroll);
 		
 		basePanel.setTweenManager(SLAnimator.createTweenManager());
 		basePanel.initialize(payBackCfg);
@@ -180,10 +196,9 @@ class OrderPanel extends JPanel {
 	private final Runnable payAction = new Runnable() {
 		@Override
 		public void run() {
-			PayPane.payWorking = true; // 결제창이 출력되어있는 도중 
-				//타 Pane으로 접근시 flag로 활용
 			basePanel.createTransition()
 				.push(new SLKeyframe(payCfg, 0.6f)
+				.setEndSide(SLSide.LEFT, menuListScroll)
 				.setStartSide(SLSide.RIGHT, payPane)
 				.setCallback(new SLKeyframe.Callback() {@Override public void done() {
 				}}))
@@ -194,23 +209,15 @@ class OrderPanel extends JPanel {
 	private final Runnable payBackAction = new Runnable() {
 		@Override
 		public void run() {
-			PayPane.payWorking = false;
 			basePanel.createTransition()
 				.push(new SLKeyframe(payBackCfg, 0.6f)
+				.setStartSide(SLSide.LEFT, menuListScroll)
 				.setEndSide(SLSide.RIGHT, payPane)
 				.setCallback(new SLKeyframe.Callback() {@Override public void done() {
 				}}))
 				.play();
 		}
 	};
-	
-	public PayPane getPayPane(){
-		return this.payPane;
-	}	
-	
-	public void setCfg(){
-		;
-	}
 	
 	public void payActionPush(){
 		this.payButton.getAniAction().run();
