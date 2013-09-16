@@ -14,8 +14,11 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 import BarChart.BarPopupFrame;
+import BarChart.HistogramChart;
+import Database.DBGenerator;
+import Database.HerbOrderTable;
 import JythonObjectFactory.JythonDriver;
-import PieChart.PiePopupFrame;
+import PieChart.PieChart;
 
 class AdminPanel extends JPanel {
 
@@ -53,21 +56,16 @@ class AdminPanel extends JPanel {
 
 		leftPanel = new JPanel(new ModifiedFlowLayout());
 		leftScroll = new JScrollPane(leftPanel);
-		//leftScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-		
-		this.add(leftScroll, BorderLayout.CENTER);
+		this.add(leftPanel, BorderLayout.CENTER);
 
 		// leftPanel.setLayout( new BorderLayout() );
 		rightPanel = new JPanel(new ModifiedFlowLayout());
 		rightScroll = new JScrollPane(rightPanel);
-		//rightScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-		//rightScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 		this.add(rightScroll, BorderLayout.EAST);
 		/* 그래프 설정 시작 */
-		/*
+
 		PieChart pieC = new PieChart();
 		leftPanel.add(pieC.getPieChart_HistogramChart());
-		*/
 		/* 그래프 설정 끝 */
 
 		/* 우측패널에 버튼 달기 */
@@ -77,7 +75,7 @@ class AdminPanel extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				/* DB test, insert */
-				
+
 				os.db.exec("insert herb_order("
 						+ " order_id," 
 						+ " order_menu_id,"
@@ -90,10 +88,9 @@ class AdminPanel extends JPanel {
 						+ " 1, "
 						+ " now()"
 						+ ")");
-				
+
 				/* DB test */
-				PiePopupFrame bpf = new PiePopupFrame("단위 선택",
-						"출력할 단위를 선택하세요.", leftPanel, os.db);
+
 			}
 		});
 
