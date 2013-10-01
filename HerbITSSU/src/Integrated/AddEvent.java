@@ -24,7 +24,7 @@ public class AddEvent {
 	private JLabel priceL;
 	private String nameS;
 	private String priceS;
-	private String [] categoryS={"커피","바디워시"};
+	private String [] categoryS={"바디/헤어", "컵", "티슈/여성", "팩/베겟속", "베이비", "화장품", "아로마/오일/램프", "방향제/향수", "향초/홀더", "비누/쿠키","직원용", "커피", "아이스커피", "음료", "과일쥬스", "빙수/와플/캔디","티포트", "테이크아웃", "워머/핸드밀", "원두/허브차"};
 	private String categoryS2;
 
 	
@@ -63,6 +63,8 @@ public class AddEvent {
 						+ "'"+(String)category.getSelectedItem()+"'"
 						+ ")"
 					);
+				num++;
+		
 				JOptionPane.showMessageDialog(null, "등록되었습니다");
 				leftpanel.removeAll();
 				leftpanel.add(nameL);

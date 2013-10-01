@@ -95,9 +95,6 @@ public class ModyEvent {
 	private void next_step()
 	{
 		leftpanel.removeAll();
-		leftpanel.add(nameL);
-		leftpanel.add(name);
-		leftpanel.add(search);
 		if(flag==1)
 		{
 			leftpanel.add(nameL);
