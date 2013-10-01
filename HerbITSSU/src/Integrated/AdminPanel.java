@@ -30,7 +30,7 @@ class AdminPanel extends JPanel {
 	private JPanel leftPanel; /* 그래프와 테이블을 가지는 패널 */
 	private JPanel rightPanel; /* 버튼을 가지는 패널 */
 
-	private JButton pie, bar, table;
+	private JButton pie, bar, table,add,mody;
 	private JButton aprioriBtn; //Apriori 예측 모듈 실행 버튼
 
 	public AdminPanel(final OrderSystem os) {
@@ -168,16 +168,31 @@ class AdminPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				// Apriori Python Module Execution
 				PythonSyncModule module = new PythonSyncModule(os);
-				
+
 			}
 		});
-		
+		// add menu
+		add = new JButton("add");
+		add.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				new AddEvent(os, leftPanel);
+			}
+		});
+		mody = new JButton("mody");
+		mody.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				new ModyEvent(os, leftPanel);
+			}
+		});
+		rightPanel.add(add);
+		rightPanel.add(mody);
 		rightPanel.add(pie);
 		rightPanel.add(bar);
 		rightPanel.add(table);
 		rightPanel.add(aprioriBtn);
-		
-		
+
 	}
 
 	public void dataUpdate() { // 수정시 변경되어야할 부분

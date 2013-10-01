@@ -1,4 +1,5 @@
 /AnimationComponent
+/Approximator
 /BarChart
 /Building.py
 /Database
@@ -8,4 +9,3 @@
 /PieChart
 /aurelienribon
 /interfaces
-/Approximator
