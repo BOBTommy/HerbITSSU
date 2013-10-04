@@ -1,8 +1,11 @@
 package Integrated;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
+import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -30,15 +33,22 @@ class OrderPanel extends JPanel {
 			String name = tmp1.getText();
 			
 			String price = "0";
-			int numberOfItem =0 , sumOfEachItemPrice =0 ;		//´Ü°¡, ¸Ş´ºº° ÇÕ°è
-			/* ¹İº¹ÇÏ¸ç °¡°İÀ» ¹Ş¾Æ¿Â´Ù. */
-			for (int tmp=0; tmp<menuList.length; tmp++ ) {
-				if (menuList[tmp].compareTo(name)==0)
-				{
-					price = priceList[tmp];
+			int numberOfItem =0 , sumOfEachItemPrice =0 ;		//ë‹¨ê°€, ë©”ë‰´ë³„ í•©ê³„
+			
+			try {
+				java.sql.ResultSet rs = os.db
+						.exec("select * from herb_menu where menu_name = '" + name + "'");
+				
+				int cnt = 0;
+				while (rs.next()) {
+					price = rs.getString("menu_price");
 				}
+			} catch (SQLException sqle) {
+				// TODO Auto-generated catch block
+				sqle.printStackTrace();
 			}
-			/* ¹İº¹ÇÏ¸ç ¼ö·®°ú ¸Ş´ºº° ÇÕ°è¸¦ ¹Ş¾Æ¿Â´Ù. */
+			
+			/* ë°˜ë³µí•˜ë©° ìˆ˜ëŸ‰ê³¼ ë©”ë‰´ë³„ í•©ê³„ë¥¼ ë°›ì•„ì˜¨ë‹¤. */
 			boolean sameMenuPickFlag = false;
 			int pos = currentNumber;
 			for (int tmp=0; tmp<currentNumber; tmp++) {
@@ -56,9 +66,9 @@ class OrderPanel extends JPanel {
 				sumOfEachItemPrice = Integer.valueOf(price).intValue();
 				currentNumber ++;
 			}
-			/* ¹Ş¾Æ¿À±â ³¡ */
-			/* Å×ÀÌºí¿¡ ¹èÁ¤ */
-			/* data[][0]: ¸Ş´º¸í, data[][1]: ÁÖ¹®¼ö·®, data[][2]: ´Ü°¡, data[][3]: ¸Ş´ºÁÖ¹®¼ö·®º°ÇÕ°è*/
+			/* ë°›ì•„ì˜¤ê¸° ë */
+			/* í…Œì´ë¸”ì— ë°°ì • */
+			/* data[][0]: ë©”ë‰´ëª…, data[][1]: ì£¼ë¬¸ìˆ˜ëŸ‰, data[][2]: ë‹¨ê°€, data[][3]: ë©”ë‰´ì£¼ë¬¸ìˆ˜ëŸ‰ë³„í•©ê³„*/
 			data[pos][0] = name;
 			data[pos][1] = Integer.toString(numberOfItem);
 			data[pos][2] = price;
@@ -70,38 +80,65 @@ class OrderPanel extends JPanel {
 		}	
 	}
 	
+	class categoryListener implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			JButton tmp1 = (JButton)e.getSource();
+			String name = tmp1.getText();
+			
+			loadMenu(name);
+		}
+	}
+	
 	OrderSystem os;
 	
-	private AniButton payButton = new AniButton("°áÁ¦ÇÏ±â");
-	private AniButton cancel = new AniButton("°áÁ¦Ãë¼Ò");
+	private AniButton payButton = new AniButton("ê²°ì œí•˜ê¸°");
+	private AniButton cancel = new AniButton("ê²°ì œì·¨ì†Œ");
 	private final SLPanel basePanel = new SLPanel();
 	private SLConfig payCfg,payBackCfg;
-	private PayPane payPane = new PayPane("°áÁ¦Ã¢ »ùÇÃ");
+	private PayPane payPane = new PayPane("ê²°ì œì°½ ìƒ˜í”Œ");
 	
 	private JTable orderListTable;
 	private DefaultTableModel orderListTableModel;
 	private JScrollPane orderListTableScroll;
-	private String data[][] = new String[30][4];		//ÁÖ¹®ÇÑ ¸ñ·ÏÀÇ µ¥ÀÌÅÍ¼Â, 30ÁÙ 4¿­
-	int currentNumber = 0;							//ÁÖ¹®ÁßÀÎ ¸Ş´º ¼ö
-	final int maximumNumber = 60; 						//ÇÑ ¹ø¿¡ ÃÑ ÁÖ¹®°¡´ÉÇÑ ¸Ş´º ¼ö
+	private String data[][] = new String[30][4];		//ì£¼ë¬¸í•œ ëª©ë¡ì˜ ë°ì´í„°ì…‹, 30ì¤„ 4ì—´
+	int currentNumber = 0;							//ì£¼ë¬¸ì¤‘ì¸ ë©”ë‰´ ìˆ˜
+	final int maximumNumber = 60; 						//í•œ ë²ˆì— ì´ ì£¼ë¬¸ê°€ëŠ¥í•œ ë©”ë‰´ ìˆ˜
 	
-	private String menuList[] = {				//¹öÆ°¿¡ µé¾î°¥ ¸Ş´º¸í
-			"Ä¿ÇÇ1", "Ä¿ÇÇ2", "Ä¿ÇÇ3", "Ä¿ÇÇ4", "Ä¿ÇÇ5", "Ä¿ÇÇ6", "Ä¿ÇÇ7", "Ä¿ÇÇ8", "Ä¿ÇÇ9"
-			,"Ä¿ÇÇ10", "Ä¿ÇÇ11", "Ä¿ÇÇ12", "Ä¿ÇÇ13", "Ä¿ÇÇ14", "Ä¿ÇÇ15", "Ä¿ÇÇ16", "Ä¿ÇÇ17", "Ä¿ÇÇ18", "Ä¿ÇÇ19", "Ä¿ÇÇ20"
-	};
 	private JScrollPane menuListScroll;
-	private String priceList[] = {
-			"1100", "1200", "1300", "1400", "1500", "1600", "1700", "1800", "1900",
-			"2000", "2100", "2200", "2300", "2400", "2500", "2600", "2700", "2800", "2900", "3000"
-	};
-	private JButton menuBtn[] = new JButton[menuList.length];
+	private ArrayList<JButton> categoryBtn = new ArrayList<JButton>();
+	private ArrayList<JButton> menuBtn = new ArrayList<JButton>();
 	JButton cash, card;
-	private String columnNames[] = { "¸Ş´º¸í", "¼ö·®", "´Ü°¡", "¸Ş´ºº° ÇÕ°è"};
-	/* data[][0]: ¸Ş´º¸í, data[][1]: ÁÖ¹®¼ö·®, data[][2]: ´Ü°¡, data[][3]: ¸Ş´ºÁÖ¹®¼ö·®º°ÇÕ°è*/
-	private JPanel categoryPanel, menuPanel;					//PIXEL ¼³Á¤
-	private JPanel cardCash;					//¹öÆ°µÎ°³ÀÇ ÆĞ³Î
+	private String columnNames[] = { "ë©”ë‰´ëª…", "ìˆ˜ëŸ‰", "ë‹¨ê°€", "ë©”ë‰´ë³„ í•©ê³„"};
+	/* data[][0]: ë©”ë‰´ëª…, data[][1]: ì£¼ë¬¸ìˆ˜ëŸ‰, data[][2]: ë‹¨ê°€, data[][3]: ë©”ë‰´ì£¼ë¬¸ìˆ˜ëŸ‰ë³„í•©ê³„*/
+	private JPanel categoryPanel, menuPanel;					//PIXEL ì„¤ì •
+	private JPanel cardCash;					//ë²„íŠ¼ë‘ê°œì˜ íŒ¨ë„
 	private JPanel pane;
 	
+	public void loadMenu(String category) {
+		try {
+			System.out.println("Load Menu: " + category);
+			JButton tmpBtn;
+			
+			java.sql.ResultSet rs = os.db
+					.exec("select * from herb_menu where menu_category = '" + category + "'");
+			
+			menuPanel.setLayout(new GridLayout(rs.getFetchSize(), 2));
+			menuPanel.removeAll();
+			menuBtn.clear();
+			while (rs.next()) {
+				tmpBtn = new JButton(rs.getString("menu_name"));
+				tmpBtn.addActionListener(new menuListener());
+				menuBtn.add(tmpBtn);
+				menuPanel.add(tmpBtn);
+			}
+			menuPanel.add(payButton);
+			menuPanel.updateUI();
+		} catch (SQLException e) {
+			
+		}
+	}
 	
 	public OrderPanel( OrderSystem os ) {
 		this.os = os;
@@ -126,7 +163,7 @@ class OrderPanel extends JPanel {
 		this.add(splitPane, BorderLayout.CENTER);
 		
 		
-		/* Å×ÀÌºí ·¹ÀÌ¾Æ¿ô ¼¼ÆÃ ½ÃÀÛ */
+		/* í…Œì´ë¸” ë ˆì´ì•„ì›ƒ ì„¸íŒ… ì‹œì‘ */
 		orderListTable = new JTable();
 		orderListTableModel = new DefaultTableModel(data, columnNames);
 		orderListTable.setModel(orderListTableModel);
@@ -137,10 +174,10 @@ class OrderPanel extends JPanel {
 		orderListTableScroll
 				.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
-		/* ÇÈ¼¿ÀÛ¾÷ ÇÊ¿äÇÑºÎºĞ ½ÃÀÛ PIXEL*/
+		/* í”½ì…€ì‘ì—… í•„ìš”í•œë¶€ë¶„ ì‹œì‘ PIXEL*/
 		menuPanel.setLayout( new ModifiedFlowLayout() );
 		cardCash.setLayout(new FlowLayout());
-		/* ÇÈ¼¿ÀÛ¾÷ ÇÊ¿äÇÑºÎºĞ ³¡ PIXEL*/
+		/* í”½ì…€ì‘ì—… í•„ìš”í•œë¶€ë¶„ ë PIXEL*/
 		
 		menuListScroll = new JScrollPane(menuPanel);
 		menuListScroll
@@ -148,23 +185,27 @@ class OrderPanel extends JPanel {
 		menuListScroll
 			.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		
-		for( int tmp=0; tmp<menuList.length; tmp++)
-		{
-			categoryPanel.add(new JButton("Cate-" + menuList[tmp]));
+		try {
+			java.sql.ResultSet rs = os.db
+					.exec("select distinct menu_category from herb_menu");
+			
+			JButton tmpBtn;
+			categoryPanel.setLayout(new GridLayout(rs.getFetchSize(), 1));
+			categoryBtn.clear();
+			while (rs.next()) {
+				tmpBtn = new JButton(rs.getString("menu_category"));
+				tmpBtn.addActionListener(new categoryListener());
+				categoryBtn.add(tmpBtn);
+				categoryPanel.add(tmpBtn);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		
-		for( int tmp=0; tmp<menuList.length; tmp++)
-		{
-			menuBtn[tmp] = new JButton(menuList[tmp]);
-			menuBtn[tmp].addActionListener(new menuListener());
-			/* ÇÈ¼¿ÀÛ¾÷ ÇÊ¿äÇÑ ºÎºĞ 2 */
-			menuPanel.add(menuBtn[tmp]);
-			/* ÇÈ¼¿ÀÛ¾÷ ÇÊ¿äÇÑºÎºĞ 2³¡ */
-		}
 		
 		payButton.setAction(payAction);
 		//cardCash.add(payButton);
-		menuPanel.add(payButton);
 		
 		cancel.setAction(payBackAction);
 		//cardCash.add(cancel);
@@ -188,7 +229,7 @@ class OrderPanel extends JPanel {
 		basePanel.initialize(payBackCfg);
 		
 	}
-	public void dataUpdate() {			//¼öÁ¤½Ã º¯°æµÇ¾î¾ßÇÒ ºÎºĞ
+	public void dataUpdate() {			//ìˆ˜ì •ì‹œ ë³€ê²½ë˜ì–´ì•¼í•  ë¶€ë¶„
 		
 		
 	}
