@@ -13,6 +13,7 @@ public class StoreGraphPanel extends JPanel {
 	private int size;
 	private int points[];
 	private String term[];
+	private int expect_cnt = 3;
 	
 	public StoreGraphPanel() {
 		this.setBackground(Color.WHITE);
@@ -56,7 +57,21 @@ public class StoreGraphPanel extends JPanel {
 		// Graph
         g2.setStroke(new BasicStroke(2));
 		g2.drawString("(" + Integer.toString(points[0]) + ")", margin_left + padding - 5, baseline - (points[0] * 5) - 10);
-		for (int i = 1; i < size; i++) {
+		for (int i = 1; i < size - expect_cnt; i++) {
+			// Line
+			g2.setColor(Color.RED);
+			g2.drawLine(margin_left + padding + x_step*(i-1), baseline - (points[i - 1] * 5),
+						margin_left + padding + x_step*i,     baseline - (points[i] * 5));
+			
+			// Label
+			g2.setColor(Color.BLACK);
+			g2.drawString("(" + Integer.toString(points[i]) + ")", margin_left + padding + x_step*i - 5, baseline - (points[i] * 5) - 10);
+		}
+		// Expected Graph
+		float[] dash3 = {0.5f, 1f, 0.5f};
+		BasicStroke bs3 = new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 1.0f, dash3, 2f);
+		g2.setStroke(bs3);
+		for (int i = size - expect_cnt; i < size; i++) {
 			// Line
 			g2.setColor(Color.RED);
 			g2.drawLine(margin_left + padding + x_step*(i-1), baseline - (points[i - 1] * 5),
