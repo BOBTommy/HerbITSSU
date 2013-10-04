@@ -1,5 +1,6 @@
 package Integrated;
 import java.awt.BorderLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
@@ -71,7 +72,7 @@ class StorePanel extends JPanel{
 		try {
 			
 			/*
-			os.db.exec("DELETE FROM herb_invenlog;");
+			os.db.exec("DELETE FROM herb_invenslog;");
 			
 			// Test Data Injection
 			String sql;
@@ -92,6 +93,12 @@ class StorePanel extends JPanel{
 			String DATE_FORMAT = "yyyy-MM-dd kk:mm:ss";
 			SimpleDateFormat format = new SimpleDateFormat(
 					DATE_FORMAT);
+			
+			JPanel buttonPanel = new JPanel(new GridLayout(1, 2));
+			buttonPanel.add(new JButton("Plus"));
+			buttonPanel.add(new JButton("Minus"));
+			
+			inventoryPanel.add(buttonPanel);
 			
 			//Load Inventory List and Create Buttons
 			
@@ -137,10 +144,11 @@ class StorePanel extends JPanel{
 		}
 		
 		this.setLayout(new BorderLayout());
+		inventoryPanel.setLayout(new GridLayout(11, 1));
 		
 		masterPanel.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
 		masterPanel.setDividerSize(1);
-		masterPanel.setDividerLocation(300);
+		masterPanel.setDividerLocation(150);
 		masterPanel.setLeftComponent(inventoryPanel);
 		masterPanel.setRightComponent(inventoryGraph);
 		
