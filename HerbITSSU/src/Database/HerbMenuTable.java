@@ -1,16 +1,12 @@
 package Database;
 import java.util.Date;
 
-
-
-
 public class HerbMenuTable {
 	private int menu_id;			//primary, auto increase
     private String menu_name;
     private int  menu_price;
     private Date menu_reg_date;
     private String menu_category;
-    
 	
 	public int getMenu_id() {
 		return menu_id;

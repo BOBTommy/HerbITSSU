@@ -7,6 +7,9 @@ public class HerbOrderTable {
 	private int order_menu_id;
 	private int order_count;
 	private Date order_date;
+	
+	public static int orderNum = 0;	// Total Order number;
+	
 	public String toString() { 
     	String result = null;
         result = order_id + "|";

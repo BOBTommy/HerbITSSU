@@ -33,7 +33,7 @@ class OrderPanel extends JPanel {
 			String name = tmp1.getText();
 			
 			String price = "0";
-			int numberOfItem =0 , sumOfEachItemPrice =0 ;		//ë‹¨ê°€, ë©”ë‰´ë³„ í•©ê³„
+			int numberOfItem =0 , sumOfEachItemPrice =0 ;		//´Ü°¡, ¸Ş´ºº° ÇÕ°è
 			
 			try {
 				java.sql.ResultSet rs = os.db
@@ -48,7 +48,7 @@ class OrderPanel extends JPanel {
 				sqle.printStackTrace();
 			}
 			
-			/* ë°˜ë³µí•˜ë©° ìˆ˜ëŸ‰ê³¼ ë©”ë‰´ë³„ í•©ê³„ë¥¼ ë°›ì•„ì˜¨ë‹¤. */
+			/* ¹İº¹ÇÏ¸ç ¼ö·®°ú ¸Ş´ºº° ÇÕ°è¸¦ ¹Ş¾Æ¿Â´Ù. */
 			boolean sameMenuPickFlag = false;
 			int pos = currentNumber;
 			for (int tmp=0; tmp<currentNumber; tmp++) {
@@ -66,9 +66,9 @@ class OrderPanel extends JPanel {
 				sumOfEachItemPrice = Integer.valueOf(price).intValue();
 				currentNumber ++;
 			}
-			/* ë°›ì•„ì˜¤ê¸° ë */
-			/* í…Œì´ë¸”ì— ë°°ì • */
-			/* data[][0]: ë©”ë‰´ëª…, data[][1]: ì£¼ë¬¸ìˆ˜ëŸ‰, data[][2]: ë‹¨ê°€, data[][3]: ë©”ë‰´ì£¼ë¬¸ìˆ˜ëŸ‰ë³„í•©ê³„*/
+			/* ¹Ş¾Æ¿À±â ³¡ */
+			/* Å×ÀÌºí¿¡ ¹èÁ¤ */
+			/* data[][0]: ¸Ş´º¸í, data[][1]: ÁÖ¹®¼ö·®, data[][2]: ´Ü°¡, data[][3]: ¸Ş´ºÁÖ¹®¼ö·®º°ÇÕ°è*/
 			data[pos][0] = name;
 			data[pos][1] = Integer.toString(numberOfItem);
 			data[pos][2] = price;
@@ -93,27 +93,27 @@ class OrderPanel extends JPanel {
 	
 	OrderSystem os;
 	
-	private AniButton payButton = new AniButton("ê²°ì œí•˜ê¸°");
-	private AniButton cancel = new AniButton("ê²°ì œì·¨ì†Œ");
+	private AniButton payButton = new AniButton("°áÁ¦ÇÏ±â");
+	private AniButton cancel = new AniButton("°áÁ¦Ãë¼Ò");
 	private final SLPanel basePanel = new SLPanel();
 	private SLConfig payCfg,payBackCfg;
-	private PayPane payPane = new PayPane("ê²°ì œì°½ ìƒ˜í”Œ");
+	private PayPane payPane = new PayPane("°áÁ¦Ã¢ »ùÇÃ");
 	
 	private JTable orderListTable;
 	private DefaultTableModel orderListTableModel;
 	private JScrollPane orderListTableScroll;
-	private String data[][] = new String[30][4];		//ì£¼ë¬¸í•œ ëª©ë¡ì˜ ë°ì´í„°ì…‹, 30ì¤„ 4ì—´
-	int currentNumber = 0;							//ì£¼ë¬¸ì¤‘ì¸ ë©”ë‰´ ìˆ˜
-	final int maximumNumber = 60; 						//í•œ ë²ˆì— ì´ ì£¼ë¬¸ê°€ëŠ¥í•œ ë©”ë‰´ ìˆ˜
+	private String data[][] = new String[30][4];		//ÁÖ¹®ÇÑ ¸ñ·ÏÀÇ µ¥ÀÌÅÍ¼Â, 30ÁÙ 4¿­
+	int currentNumber = 0;							//ÁÖ¹®ÁßÀÎ ¸Ş´º ¼ö
+	final int maximumNumber = 60; 						//ÇÑ ¹ø¿¡ ÃÑ ÁÖ¹®°¡´ÉÇÑ ¸Ş´º ¼ö
 	
 	private JScrollPane menuListScroll;
 	private ArrayList<JButton> categoryBtn = new ArrayList<JButton>();
 	private ArrayList<JButton> menuBtn = new ArrayList<JButton>();
 	JButton cash, card;
-	private String columnNames[] = { "ë©”ë‰´ëª…", "ìˆ˜ëŸ‰", "ë‹¨ê°€", "ë©”ë‰´ë³„ í•©ê³„"};
-	/* data[][0]: ë©”ë‰´ëª…, data[][1]: ì£¼ë¬¸ìˆ˜ëŸ‰, data[][2]: ë‹¨ê°€, data[][3]: ë©”ë‰´ì£¼ë¬¸ìˆ˜ëŸ‰ë³„í•©ê³„*/
-	private JPanel categoryPanel, menuPanel;					//PIXEL ì„¤ì •
-	private JPanel cardCash;					//ë²„íŠ¼ë‘ê°œì˜ íŒ¨ë„
+	private String columnNames[] = { "¸Ş´º¸í", "¼ö·®", "´Ü°¡", "¸Ş´ºº° ÇÕ°è"};
+	/* data[][0]: ¸Ş´º¸í, data[][1]: ÁÖ¹®¼ö·®, data[][2]: ´Ü°¡, data[][3]: ¸Ş´ºÁÖ¹®¼ö·®º°ÇÕ°è*/
+	private JPanel categoryPanel, menuPanel;					//PIXEL ¼³Á¤
+	private JPanel cardCash;					//¹öÆ°µÎ°³ÀÇ ÆĞ³Î
 	private JPanel pane;
 	
 	public void loadMenu(String category) {
@@ -163,7 +163,7 @@ class OrderPanel extends JPanel {
 		this.add(splitPane, BorderLayout.CENTER);
 		
 		
-		/* í…Œì´ë¸” ë ˆì´ì•„ì›ƒ ì„¸íŒ… ì‹œì‘ */
+		/* Å×ÀÌºí ·¹ÀÌ¾Æ¿ô ¼¼ÆÃ ½ÃÀÛ */
 		orderListTable = new JTable();
 		orderListTableModel = new DefaultTableModel(data, columnNames);
 		orderListTable.setModel(orderListTableModel);
@@ -174,10 +174,10 @@ class OrderPanel extends JPanel {
 		orderListTableScroll
 				.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
-		/* í”½ì…€ì‘ì—… í•„ìš”í•œë¶€ë¶„ ì‹œì‘ PIXEL*/
+		/* ÇÈ¼¿ÀÛ¾÷ ÇÊ¿äÇÑºÎºĞ ½ÃÀÛ PIXEL*/
 		menuPanel.setLayout( new ModifiedFlowLayout() );
 		cardCash.setLayout(new FlowLayout());
-		/* í”½ì…€ì‘ì—… í•„ìš”í•œë¶€ë¶„ ë PIXEL*/
+		/* ÇÈ¼¿ÀÛ¾÷ ÇÊ¿äÇÑºÎºĞ ³¡ PIXEL*/
 		
 		menuListScroll = new JScrollPane(menuPanel);
 		menuListScroll
@@ -209,7 +209,7 @@ class OrderPanel extends JPanel {
 		
 		cancel.setAction(payBackAction);
 		//cardCash.add(cancel);
-		payPane.add(cancel);
+		payPane.addCancelButton(cancel);
 		
 		orderListTableModel.setDataVector(data, columnNames);
 		
@@ -229,7 +229,7 @@ class OrderPanel extends JPanel {
 		basePanel.initialize(payBackCfg);
 		
 	}
-	public void dataUpdate() {			//ìˆ˜ì •ì‹œ ë³€ê²½ë˜ì–´ì•¼í•  ë¶€ë¶„
+	public void dataUpdate() {			//¼öÁ¤½Ã º¯°æµÇ¾î¾ßÇÒ ºÎºĞ
 		
 		
 	}
