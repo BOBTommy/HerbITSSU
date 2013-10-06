@@ -1,5 +1,6 @@
 package Integrated;
 
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
@@ -31,6 +32,8 @@ public class AddEvent {
 	public AddEvent(final OrderSystem os,final JPanel pan) {
 		this.os=os;
 		leftpanel=pan;
+		leftpanel.setLayout(new FlowLayout());
+		leftpanel.removeAll();
 		rs = os.db.exec("select * from herb_menu;");
 		num=0;
 		try {
