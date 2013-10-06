@@ -1,6 +1,13 @@
 package Integrated;
 import java.awt.BorderLayout;
 import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.DisplayMode;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.Toolkit;
+import java.awt.Window;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -21,6 +28,13 @@ class OrderSystem extends JFrame{
 	OrderPanel orderPanel;		//주문 탭
 	AdminPanel adminPanel;			//관리자메뉴 탭
 	
+	
+	
+
+
+
+
+	
 	public void sync() {
 		storePanel.dataUpdate();
 		orderPanel.dataUpdate();
@@ -28,10 +42,15 @@ class OrderSystem extends JFrame{
 	}
 	
 	public OrderSystem() {
+		Toolkit tk = Toolkit.getDefaultToolkit();
+		Dimension di = tk.getScreenSize();
+		
 		db = new DBGenerator();
 		
 		setTitle("Cafe in Herb");
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		this.setUndecorated(true);
+		setScreen (this, true, (int)di.getWidth(), (int)di.getHeight());
         addWindowListener( new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent we) {
@@ -50,8 +69,7 @@ class OrderSystem extends JFrame{
 		
 		HerbPane pane = createTabbedPane();	//탭팬을 생성하여 컨텐트팬에 부착한다.
 		contentPane.add(pane,BorderLayout.CENTER);
-		
-		setSize(800, 600);				//사이즈를 설정한다.
+
 		setVisible(true);				//화면에 보이도록 설정한다.
 		
 	}
@@ -66,4 +84,30 @@ class OrderSystem extends JFrame{
 		pane.addTab("관리자메뉴", adminPanel);				//고객관리 탭을 추가
 		return pane;
 	}
+	
+    private static void setScreen (Window window, boolean full, int size_X, int size_Y) {
+        DisplayMode dm;
+        GraphicsConfiguration gc;
+        GraphicsDevice gd;
+        GraphicsEnvironment ge;
+
+        dm = new DisplayMode(size_X, size_Y, 32, DisplayMode.REFRESH_RATE_UNKNOWN);
+        ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        gd = ge.getDefaultScreenDevice();
+        gc = gd.getDefaultConfiguration();
+        if (full) {
+          if (gd.isFullScreenSupported()) {
+            gd.setFullScreenWindow(window);
+            if (gd.isDisplayChangeSupported()) {
+              gd.setDisplayMode(dm);
+              return ; // finish method
+            }
+
+          }
+        } // end if (full)
+
+        gd.setFullScreenWindow(null);
+        window.setSize(size_X, size_Y);
+      } // close setScreen
+
 }
