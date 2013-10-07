@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -22,6 +24,8 @@ public class PayPane extends JPanel{
 	 */
 	
 	public static boolean payWorking = false;
+	
+	private OrderPanel parent;
 	private JLabel label = new JLabel();
 	private Border blackline;
 	
@@ -31,9 +35,11 @@ public class PayPane extends JPanel{
 	private JButton cardBtn;
 	private JButton cashBtn;
 	private JButton backBtn;
+	private AniButton cancelBtn;
 	
-	public PayPane(String text){
+	public PayPane(String text, OrderPanel orderPanel){
 		
+		this.parent = orderPanel;
 		Color FG_COLOR = new Color(0x3B5998);
 		label.setForeground(FG_COLOR);
 		label.setFont(new Font("Sans", Font.BOLD, 30));
@@ -51,7 +57,7 @@ public class PayPane extends JPanel{
 		this.backBtn = new JButton("搬力秒家");
 		
 		updatePanel();
-		
+		updateBtnEvent();
 	}
 	
 	private void updatePanel(){
@@ -63,10 +69,31 @@ public class PayPane extends JPanel{
 		this.add(this.bottomPanel , BorderLayout.SOUTH);
 	}
 	
+	private void updateBtnEvent(){
+		
+		/*
+		 * 搬力 秒家 Flow -> resetTotal -> cancelBtn Push
+		 */
+		
+		this.backBtn.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				parent.resetTotal();
+				cancelBtn.getAniAction().run();
+			}
+		});
+	}
+	
 	public void addCancelButton(AniButton cancelBtn){
+		this.cancelBtn = cancelBtn;
+		addBottomBtns();
+		this.bottomPanel.add(cancelBtn);
+	}
+	
+	private void addBottomBtns(){
 		this.bottomPanel.add(cardBtn);
 		this.bottomPanel.add(cashBtn);
-		this.bottomPanel.add(cancelBtn);
 		this.bottomPanel.add(backBtn);
 	}
 

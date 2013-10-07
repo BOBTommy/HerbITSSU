@@ -107,7 +107,7 @@ class OrderPanel extends JPanel {
 	private AniButton cancel = new AniButton("뒤로가기");
 	private final SLPanel basePanel = new SLPanel();
 	private SLConfig payCfg, payBackCfg;
-	private PayPane payPane = new PayPane("결제창 샘플");
+	private PayPane payPane = new PayPane("결제창 샘플", this);
 
 	private JTable orderListTable;
 	private DefaultTableModel orderListTableModel;
