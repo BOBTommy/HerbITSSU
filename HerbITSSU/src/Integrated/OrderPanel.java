@@ -23,8 +23,11 @@ import aurelienribon.slidinglayout.SLPanel;
 import aurelienribon.slidinglayout.SLSide;
 
 class OrderPanel extends JPanel {
+	
 	private String modyName;
 	private int flag=0;
+	private int orderTotal; //주문 총 합계
+	
 	public String returnName()
 	{
 		return modyName;
@@ -81,6 +84,8 @@ class OrderPanel extends JPanel {
 			data[pos][3] = Integer.toString(sumOfEachItemPrice);
 			if(flag==0)
 				orderListTableModel.setDataVector(data, columnNames);
+			
+			orderTotal += Integer.parseInt(price);	//총 주문 합계에 현재 주문된 값을 더한다.
 
 		}
 	}
@@ -99,7 +104,7 @@ class OrderPanel extends JPanel {
 	OrderSystem os;
 
 	private AniButton payButton = new AniButton("결제하기");
-	private AniButton cancel = new AniButton("결제취소");
+	private AniButton cancel = new AniButton("뒤로가기");
 	private final SLPanel basePanel = new SLPanel();
 	private SLConfig payCfg, payBackCfg;
 	private PayPane payPane = new PayPane("결제창 샘플");
@@ -120,6 +125,8 @@ class OrderPanel extends JPanel {
 	private JPanel categoryPanel, menuPanel; // PIXEL 설정
 	private JPanel cardCash; // 버튼두개의 패널
 	private JPanel pane;
+	
+	
 
 	public void loadMenu(String category) {
 		try {
@@ -153,6 +160,7 @@ class OrderPanel extends JPanel {
 		menuPanel = new JPanel();
 		cardCash = new JPanel();
 		pane = new JPanel();
+		this.orderTotal = 0; //주문 총 합계
 
 		this.setLayout(new BorderLayout());
 		pane.setLayout(new BorderLayout());
@@ -343,5 +351,13 @@ class OrderPanel extends JPanel {
 
 	public static class Accessor extends SLAnimator.ComponentAccessor {
 
+	}
+	
+	public void resetTotal(){	//주문취소(초기화시)
+		this.orderTotal = 0;
+	}
+	
+	public int getTotal(){		//주문 총합계 반환
+		return this.orderTotal;
 	}
 }

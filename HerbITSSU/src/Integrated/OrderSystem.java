@@ -28,12 +28,6 @@ class OrderSystem extends JFrame{
 	StorePanel storePanel;			//犁绊包府 徘
 	OrderPanel orderPanel;		//林巩 徘
 	AdminPanel adminPanel;			//包府磊皋春 徘
-	
-	
-	
-
-
-
 
 	
 	public void sync() {
