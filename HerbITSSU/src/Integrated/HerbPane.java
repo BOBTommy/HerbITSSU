@@ -10,7 +10,7 @@ public class HerbPane extends JTabbedPane{
 	/*
 	 * Tween Accessor
 	 */
-	
+
 	public static class Accessor extends SLAnimator.ComponentAccessor{
 		
 	}

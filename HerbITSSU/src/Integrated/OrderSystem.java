@@ -12,6 +12,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import javax.swing.JFrame;
+import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -50,7 +51,7 @@ class OrderSystem extends JFrame{
 		setTitle("Cafe in Herb");
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		this.setUndecorated(true);
-		setScreen (this, true, (int)di.getWidth(), (int)di.getHeight());
+		setScreen (this, false, (int)di.getWidth(), (int)di.getHeight());
         addWindowListener( new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent we) {
@@ -76,12 +77,14 @@ class OrderSystem extends JFrame{
 	
 	HerbPane createTabbedPane() {
 		HerbPane pane = new HerbPane();		//HerbPane에 주문관리, 매장관리, 고객관리 탭을 추가한다.
+		
 		storePanel = new StorePanel(this);
-		pane.addTab("재고관리", storePanel);				//매장관리 탭을 추가
+		
+		pane.addTab("<html><body leftmargin=15 topmargin=8 marginwidth=15 marginheight=5>재고관리</body></html>", storePanel);				//매장관리 탭을 추가
 		orderPanel = new OrderPanel(this);
-		pane.addTab("주문관리", orderPanel);				//주문관리 탭을 추가
+		pane.addTab("<html><body leftmargin=15 topmargin=8 marginwidth=15 marginheight=5>주문관리</body></html>", orderPanel);				//주문관리 탭을 추가
 		adminPanel = new AdminPanel(this);
-		pane.addTab("관리자메뉴", adminPanel);				//고객관리 탭을 추가
+		pane.addTab("<html><body leftmargin=15 topmargin=8 marginwidth=15 marginheight=5>관리자메뉴</body></html>", adminPanel);				//고객관리 탭을 추가
 		return pane;
 	}
 	
