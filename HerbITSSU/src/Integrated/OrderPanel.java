@@ -312,6 +312,7 @@ class OrderPanel extends JPanel {
 	private final Runnable payAction = new Runnable() {
 		@Override
 		public void run() {
+			payPane.setTotal(orderTotal);
 			basePanel
 					.createTransition()
 					.push(new SLKeyframe(payCfg, 0.6f)
@@ -342,6 +343,7 @@ class OrderPanel extends JPanel {
 	};
 
 	public void payActionPush() {
+		this.payPane.setTotal(this.orderTotal);
 		this.payButton.getAniAction().run();
 	}
 
@@ -357,7 +359,4 @@ class OrderPanel extends JPanel {
 		this.orderTotal = 0;
 	}
 	
-	public int getTotal(){		//주문 총합계 반환
-		return this.orderTotal;
-	}
 }

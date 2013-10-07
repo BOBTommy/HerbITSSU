@@ -6,6 +6,8 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -17,6 +19,7 @@ import javax.swing.border.Border;
 import AnimationComponent.AniButton;
 
 public class PayPane extends JPanel{
+	
 	/*
 	 * 실제로는 OrderPanel에서 받아온 cancel 버튼이 뒤로가기 역할.
 	 * 뒤로가기 Flow : cancel Button Event
@@ -28,9 +31,15 @@ public class PayPane extends JPanel{
 	private OrderPanel parent;
 	private JLabel label = new JLabel();
 	private Border blackline;
+	private int total;						//주문 총액
 	
 	private JPanel centerPanel;
 	private JPanel bottomPanel;
+	
+	private JLabel dateLabel = new JLabel();	//결제 일시
+	private JLabel totalLabel = new JLabel();	//총 결제 금액
+	private JLabel recommandLabel = new JLabel();	//추천 메뉴
+	private JLabel ruleLabel = new JLabel();	//판매 절차
 	
 	private JButton cardBtn;
 	private JButton cashBtn;
@@ -49,12 +58,13 @@ public class PayPane extends JPanel{
 		blackline = BorderFactory.createLineBorder(Color.black,5);
 		this.setBorder(blackline);
 		
-		this.centerPanel = new JPanel();
+		this.centerPanel = new JPanel(new GridLayout(4,1,10,10));
 		this.bottomPanel = new JPanel(new GridLayout(1,4,10,10));
 		
 		this.cardBtn = new JButton("카드결제");
 		this.cashBtn = new JButton("현금결제");
 		this.backBtn = new JButton("결제취소");
+		this.total =  0;
 		
 		updatePanel();
 		updateBtnEvent();
@@ -63,6 +73,8 @@ public class PayPane extends JPanel{
 	private void updatePanel(){
 		this.setLayout(new BorderLayout());
 		
+		this.centerPanel.setBorder(BorderFactory.createEmptyBorder(25, 10, 10, 10));
+		updateCenterPanel();
 		this.add(this.centerPanel , BorderLayout.CENTER);
 		
 		this.bottomPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -74,15 +86,29 @@ public class PayPane extends JPanel{
 		/*
 		 * 결제 취소 Flow -> resetTotal -> cancelBtn Push
 		 */
-		
 		this.backBtn.addActionListener(new ActionListener() {
-			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				parent.resetTotal();
 				cancelBtn.getAniAction().run();
 			}
 		});
+	}
+	
+	public void updateCenterPanel(){
+		
+		//결제 시간 업데이트
+		Date dt = new Date();
+		SimpleDateFormat dtForm = new SimpleDateFormat("yyyy.MM.dd HH.mm.ss");
+		String curTime = dtForm.format(dt.getTime());
+		dateLabel.setText("결제 일시 : \t\t" + curTime);
+		
+		//총 결제액 업데이트
+		String total = Integer.toString(this.total);
+		totalLabel.setText("총 결제액 : " + total);
+		
+		this.centerPanel.add(dateLabel);
+		this.centerPanel.add(totalLabel);
 	}
 	
 	public void addCancelButton(AniButton cancelBtn){
@@ -95,6 +121,11 @@ public class PayPane extends JPanel{
 		this.bottomPanel.add(cardBtn);
 		this.bottomPanel.add(cashBtn);
 		this.bottomPanel.add(backBtn);
+	}
+	
+	public void setTotal(int total){
+		this.total = total;
+		this.totalLabel.setText("총 결제액 : " + Integer.toString(this.total));
 	}
 
 }
