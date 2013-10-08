@@ -105,10 +105,24 @@ public class PayPane extends JPanel{
 		
 		//총 결제액 업데이트
 		String total = Integer.toString(this.total);
-		totalLabel.setText("총 결제액 : " + total);
+		totalLabel.setText("총 결제액 : \t" + total);
+		
+		//판매 절차 업데이트
+		String rule = "<html>판매 절차<br>"
+				+ "1. 주문 내역을 확인합니다.<br>"
+				+ "2. 주문 내역에 대한 추천 메뉴의 주문 여부를 여쭤봅니다.<br>"
+				+ "\tEx. 아메리카노에는 와플을 같이 드시는 분이 많은데 어떠신가요?<br>"
+				+ "3. 총 금액을 말쓰드리고 결제 수단(카드, 현금)을 여쭤 봅니다.<br>"
+				+ "4. 결제를 진행하고 대기표를 발급해 드리고, 기다리는 손님이 많은 경우,"
+				+ " 미리 양해를 구합니다.<br>"
+				+ "5. 주문과 실제 내역을 확인합니다."
+				+ "</html>";
+		ruleLabel.setText(rule);
 		
 		this.centerPanel.add(dateLabel);
 		this.centerPanel.add(totalLabel);
+		//추천 메뉴
+		this.centerPanel.add(ruleLabel);
 	}
 	
 	public void addCancelButton(AniButton cancelBtn){
