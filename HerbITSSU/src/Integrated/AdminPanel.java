@@ -1,6 +1,8 @@
 package Integrated;
 
 import java.awt.BorderLayout;
+import java.awt.Font;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
@@ -13,11 +15,11 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
-import BarChart.BarPopupFrame;
+import BarChart.BarPanel;
 import JythonObjectFactory.JythonDriver;
-import PieChart.PiePopupFrame;
+import PieChart.PiePanel;
 
-class AdminPanel extends JPanel {
+public class AdminPanel extends JPanel {
 
 	final OrderSystem os;
 
@@ -32,7 +34,7 @@ class AdminPanel extends JPanel {
 
 	private JButton pie, bar, table,add,mody;
 	private JButton aprioriBtn; //Apriori 예측 모듈 실행 버튼
-
+	private Font bigFont = new Font("굴림", Font.BOLD, 20);
 	public AdminPanel(final OrderSystem os) {
 		this.os = os;
 
@@ -58,7 +60,7 @@ class AdminPanel extends JPanel {
 		this.add(leftScroll, BorderLayout.CENTER);
 
 		// leftPanel.setLayout( new BorderLayout() );
-		rightPanel = new JPanel(new ModifiedFlowLayout());
+		rightPanel = new JPanel(new GridLayout(10, 1, 25, 25));
 		rightScroll = new JScrollPane(rightPanel);
 		//rightScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		//rightScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
@@ -71,7 +73,8 @@ class AdminPanel extends JPanel {
 		/* 그래프 설정 끝 */
 
 		/* 우측패널에 버튼 달기 */
-		pie = new JButton("pie");
+		pie = new JButton("파이그래프 보기");
+		pie.setFont(bigFont);
 		pie.addActionListener(new ActionListener() {
 
 			@Override
@@ -92,12 +95,13 @@ class AdminPanel extends JPanel {
 						+ ")");
 				
 				/* DB test */
-				PiePopupFrame bpf = new PiePopupFrame("단위 선택",
+				PiePanel bpf = new PiePanel("단위 선택",
 						"출력할 단위를 선택하세요.", leftPanel, os.db);
 			}
 		});
 
-		bar = new JButton("bar");
+		bar = new JButton("막대그래프와 판매예측");
+		bar.setFont(bigFont);
 		bar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				/* DB test */
@@ -140,12 +144,13 @@ class AdminPanel extends JPanel {
 					e.printStackTrace();
 				}
 				/* DB test */
-				BarPopupFrame bpf = new BarPopupFrame("단위 선택",
+				BarPanel bpf = new BarPanel("단위 선택",
 						"출력할 단위를 선택하세요.", leftPanel, os.db);
 			}
 		});
 
-		table = new JButton("table");
+		table = new JButton("판매현황표");
+		table.setFont(bigFont);
 		table.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				/* Jython test */
@@ -162,6 +167,7 @@ class AdminPanel extends JPanel {
 		});
 		
 		aprioriBtn = new JButton("Apriori Sync");
+		aprioriBtn.setFont(bigFont);
 		aprioriBtn.addActionListener(new ActionListener() {
 			
 			@Override
@@ -172,14 +178,16 @@ class AdminPanel extends JPanel {
 			}
 		});
 		// add menu
-		add = new JButton("add");
+		add = new JButton("품목 정보 추가");
+		add.setFont(bigFont);
 		add.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				new AddEvent(os, leftPanel);
 			}
 		});
-		mody = new JButton("mody");
+		mody = new JButton("품목 정보 수정");
+		mody.setFont(bigFont);
 		mody.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {

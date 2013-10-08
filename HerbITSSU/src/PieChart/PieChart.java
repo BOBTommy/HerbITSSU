@@ -26,22 +26,17 @@ import Database.HerbOrderTable;
 /*메뉴별 판매량을 그리는 파이차트 */
 public class PieChart{
 	  private JFreeChart chart = null;
-	  private TextTitle subTitle = null;
-	  private String menuList[] = {				//버튼에 들어갈 메뉴명
-				"coffee1", "coffee2", "coffee3", "coffee4", "coffee5", "coffee6", "coffee7", "coffee8", "coffee9"
-				, "coffee10", "coffee11", "coffee12", "coffee13", "coffee14", "coffee15", "coffee16", "coffee17", 
-				"coffee18", "coffee19", "coffee20"
-		};
+	  
 	  private String menu, chart_subTitle1, chart_subTitle2;
-	  private String date;
+	  private String date, subDate;
 	  private DBGenerator db;
 	  private String category_sumOfSales = "매출 합계";
 	  private DefaultCategoryDataset dataSet;
+	 
 	  
 	  public PieChart(DBGenerator db){
 		  dataSet = new DefaultCategoryDataset();
 		  this.db = db;
-		  
 		  /* 판매량과 메뉴명 기입 부분 */
 		  /*
 		  myDataset.setValue(10, category_sumOfSales
@@ -56,6 +51,7 @@ public class PieChart{
 					+ day
 					+" 00:00:00"
 					+"\"";
+		  this.subDate = date.substring(1, date.length()-1);
 	  }
 	  public void setData(String option) {
 		  try {
@@ -158,7 +154,7 @@ public class PieChart{
 					series.add(19, sumOfSales[5]);
 					*/
 					format = new SimpleDateFormat("kk");
-					String nowHour = format.format(new Date());
+					String nowHour = format.format(format.parse(subDate, new ParsePosition(0)));
 					int k = Integer.valueOf(nowHour).intValue();
 					int pos = -1;
 					if (k < 11) {
@@ -195,7 +191,7 @@ public class PieChart{
 					
 					for( j = startPos; j<tmp.length; j++) {
 						if (tmp[j] == 0) {
-							dataSet.addValue(sumOfSales[j], category_sumOfSales, "현재");
+							//dataSet.addValue(sumOfSales[j], category_sumOfSales, "현재");
 							continue;
 						}
 						dataSet.addValue(sumOfSales[j], category_sumOfSales, tmp[j]+"시" );
@@ -260,7 +256,7 @@ public class PieChart{
 					}
 					int timeIndex = 0; // 현재가 일요일이라 가정할 경우 월 : 0, 화 : 1, 수 : 2, 목 :
 										// 3, 금 : 4, 토 : 5, 일 : 6
-					Date now = new Date();
+					Date now = format.parse(subDate, new ParsePosition(0));
 					long nowTime = now.getTime(); // 1970~ 현재 일 수
 					long tomorrowDayTime = ((nowTime/(24000 *3600))*24000*3600) + 24000*3600;	//내일 자정의 milliseconds
 					System.out.println(tomorrowDayTime);
@@ -337,7 +333,7 @@ public class PieChart{
 					for( j = startPos; j<tmp.length; j++) {
 						//System.out.println(j);
 						if (tmp[j] == 0) {
-							dataSet.addValue(sumOfSales[j], category_sumOfSales, "현재");
+							dataSet.addValue(sumOfSales[j], category_sumOfSales, "기준일");
 							continue;
 						}
 						dataSet.addValue(sumOfSales[j], category_sumOfSales, (0-tmp[j])+"일 전");
@@ -393,7 +389,7 @@ public class PieChart{
 						sumOfSales[tmp] = 0;
 					}
 					int timeIndex = 0; //
-					Date now = new Date();
+					Date now = format.parse(subDate, new ParsePosition(0));
 					long nowDay = now.getTime() / (3600 * 24000); // 1970~ 현재 일 수
 					while (i.hasNext()) {
 						HerbOrderTable hot = (HerbOrderTable) i.next();
@@ -455,7 +451,7 @@ public class PieChart{
 					if( startPos == -1) startPos = 0;
 					for( j = startPos; j<tmp.length; j++) {
 						if (tmp[j] == 0) {
-							dataSet.addValue(sumOfSales[j], category_sumOfSales, "현재");
+							dataSet.addValue(sumOfSales[j], category_sumOfSales, "기준 주일");
 							continue;
 						}
 						dataSet.addValue( sumOfSales[j], category_sumOfSales
@@ -519,7 +515,7 @@ public class PieChart{
 						sumOfSales[tmp] = 0;
 					}
 					int timeIndex = 0; //
-					Date now = new Date();
+					Date now = format.parse(subDate, new ParsePosition(0));
 					long nowDay = now.getTime() / (3600 * 24000); // 1970~ 현재 일 수
 					while (i.hasNext()) {
 						HerbOrderTable hot = (HerbOrderTable) i.next();
@@ -595,7 +591,7 @@ public class PieChart{
 					if( startPos == -1) startPos = 0;
 					for( j = startPos; j<tmp.length; j++) {
 						if (tmp[j] == 0) {
-							dataSet.addValue(sumOfSales[j], category_sumOfSales, "현재");
+							dataSet.addValue(sumOfSales[j], category_sumOfSales, "기준월(12월)");
 							continue;
 						}
 						dataSet.addValue( sumOfSales[j], category_sumOfSales, (0-tmp[j])+"개월 전");
@@ -657,7 +653,7 @@ public class PieChart{
 						sumOfSales[tmp] = 0;
 					}
 					int timeIndex = 0; //
-					Date now = new Date();
+					Date now = format.parse(subDate, new ParsePosition(0));
 					long nowDay = now.getTime() / (3600 * 24000); // 1970~ 현재 일 수
 					while (i.hasNext()) {
 						HerbOrderTable hot = (HerbOrderTable) i.next();
@@ -720,7 +716,7 @@ public class PieChart{
 					if( startPos == -1) startPos = 0;
 					for( j = startPos; j<tmp.length; j++) {
 						if (tmp[j] == 0) {
-							dataSet.addValue(sumOfSales[j], category_sumOfSales, "현재");
+							dataSet.addValue(sumOfSales[j], category_sumOfSales, "기준년도");
 							continue;
 						}
 						dataSet.addValue(sumOfSales[j], category_sumOfSales, (0-tmp[j])+"년 전");

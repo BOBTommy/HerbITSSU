@@ -6,63 +6,93 @@ import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
-
+import java.awt.Font;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import Database.DBGenerator;
 
 
-public class PiePopupFrame extends JFrame implements ActionListener
+public class PiePanel implements ActionListener
 {
 	JButton btn[] = new JButton[5];
-	JButton btn_2nd = new JButton("확인");
+	JButton btn_2nd = new JButton();
+	
 	String indexStringOfUnits[] = {"시간", "일", "주", "월", "일년"};
 	JPanel targetPanel;
-	JLabel label1, label2;
+	JLabel label1;
 	int unitIndex;
 	DBGenerator db;
 	LinkedList<String> yearList, monthList, dayList; 
-	JPanel datePanel = new JPanel(new GridLayout(1, 4, 25, 25));
+	JPanel datePanel = new JPanel(new GridLayout(1, 3, 25, 25));
+	//JPanel selectPanel = new JPanel(new GridLayout(4, 1, 0, 0));
+	JPanel bottomPanel = new JPanel(new GridLayout(3, 1, 25, 25));
 	JComboBox yearBox, monthBox, dayBox;
-	public PiePopupFrame(String title, String label, JPanel targetPanel, DBGenerator db){
-		super(title);
-		this.setLayout(new GridLayout(4,2));
-		this.setSize(400,300);
+	Font bigFont = new Font("굴림", Font.PLAIN, 25);
+	public PiePanel(String title, String label, JPanel leftPanel, DBGenerator db){
+		//super(title);
+		this.targetPanel = new JPanel();
+		leftPanel.removeAll();
+		leftPanel.setVisible(false);
+		leftPanel.add(this.targetPanel);
+		leftPanel.setVisible(true);
+		
+		targetPanel.setLayout(new GridLayout(4,1, 20, 20));
+		//this.setSize(400,300);
 		
 		//창닫기 버튼 클릭시 프레임 종료
-		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		//this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
 		//버튼생성
 		btn[0] = new JButton("시간 단위");
+		btn[0].setFont(bigFont);
 		btn[0].addActionListener(this);
 		btn[1] = new JButton("일 단위");
+		btn[1].setFont(bigFont);
 		btn[1].addActionListener(this);
 		btn[2] = new JButton("주 단위");
+		btn[2].setFont(bigFont);
 		btn[2].addActionListener(this);
 		btn[3] = new JButton("월 단위");
+		btn[3].setFont(bigFont);
 		btn[3].addActionListener(this);
 		btn[4] = new JButton("일년 단위");
+		btn[4].setFont(bigFont);
 		btn[4].addActionListener(this);
+		btn_2nd = new JButton("확인");
 		btn_2nd.addActionListener(this);
+		btn_2nd.setFont(bigFont);
+		
 		//프레임에 추가
 		label += "\r\n";
 		label1 = new JLabel(label, JLabel.CENTER);
-		label2 = new JLabel();
+		//label2 = new JLabel();
 		//this.add(new JLabel(label,JLabel.CENTER));
 		//this.add(new JLabel());
-		this.add(label1);
-		this.add(label2);
-		this.add(btn[0]);
-		this.add(btn[1]);
-		this.add(btn[2]);
-		this.add(btn[3]);
-		this.add(btn[4]);
+		targetPanel.removeAll();
 		
-		this.targetPanel = targetPanel;
+		label1.setFont(bigFont);
+		
+		targetPanel.add(label1);
+		//targetPanel.add(label2);
+		
+		JPanel bottom1P = new JPanel();
+		bottom1P.setLayout(new GridLayout(1, 2, 25, 25));
+		JPanel bottom2P = new JPanel();
+		bottom2P.setLayout(new GridLayout(1, 2, 25, 25));
+		JPanel bottom3P = new JPanel();
+		bottom3P.setLayout(new GridLayout(1, 2, 25, 25));
+		bottom1P.add(btn[0]);
+		bottom1P.add(btn[1]);
+		bottom2P.add(btn[2]);
+		bottom2P.add(btn[3]);
+		bottom3P.add(btn[4]);
+		bottom3P.add(new JLabel());
+		targetPanel.add(bottom1P);
+		targetPanel.add(bottom2P);
+		targetPanel.add(bottom3P);
 		this.db = db;
 		
 		yearList = new LinkedList<String>();
@@ -102,12 +132,23 @@ public class PiePopupFrame extends JFrame implements ActionListener
 		monthBox.setSelectedItem(selMonth);
 		dayBox.setSelectedItem(selDay);
 		
+		yearBox.setFont(bigFont);
+		monthBox.setFont(bigFont);
+		dayBox.setFont(bigFont);
 		datePanel.add( yearBox );
 		datePanel.add( monthBox );
 		datePanel.add( dayBox );
-		datePanel.add( btn_2nd );
+		//datePanel.add( new JLabel() );
+		JLabel chooseDay = new JLabel("출력할 기준일을 선택하세요", JLabel.CENTER);
+		chooseDay.setFont(bigFont);
+		bottomPanel.add(chooseDay);
+				
+		bottomPanel.add(datePanel);
+		bottomPanel.add( btn_2nd );
+		
 		//창보이기
-		this.setVisible(true);
+		targetPanel.setVisible(false);
+		targetPanel.setVisible(true);
 	}
 
 	//오버라이딩
@@ -117,30 +158,37 @@ public class PiePopupFrame extends JFrame implements ActionListener
 	{
 		Object source = ae.getSource();
 		
-		if( source == btn_2nd) 
+		if ((source != btn[0])
+		&& (source != btn[1])
+		&& (source != btn[2])
+		&& (source != btn[3])
+		&& (source != btn[4]))
 		{
+			
 			PieChart pieC = new PieChart(db);
 			//기준을 정했을 경우
-			if (unitIndex > 2) {
-				//월, 일년 단위
-				pieC.setTime(
-						(String)yearBox.getSelectedItem(), "1", "1");
-				//System.out.println(yearBox.getSelectedItem());
-			}
+			
 			pieC.setTime((String)yearBox.getSelectedItem(),
 					(String)monthBox.getSelectedItem(), 
 					(String)dayBox.getSelectedItem());
-			
+			if (unitIndex > 2) {
+				//월, 일년 단위
+				pieC.setTime(
+						(String)yearBox.getSelectedItem(), "12", "31");
+				//System.out.println(yearBox.getSelectedItem());
+			}
 			
 			pieC.setData( indexStringOfUnits[ unitIndex ] );
 			
 			targetPanel.removeAll();
+			targetPanel.setLayout(new GridLayout(1, 1, 25, 25));
 			targetPanel.add(pieC.getPieChart_HistogramChart());
 			
 			targetPanel.setVisible(false);
 			targetPanel.setVisible(true);
-			this.dispose();			//선택창을 닫기
+			//this.dispose();			//선택창을 닫기
 			return;
+		
 		}
 		
 		//단위 선택시
@@ -149,27 +197,17 @@ public class PiePopupFrame extends JFrame implements ActionListener
 			if (btnIndex ==3) {
 			datePanel.remove(monthBox);
 			datePanel.remove(dayBox);
+			
 			}
 			if (source == btn[btnIndex])
 				break;
 		}
 		
-		
-		this.remove(btn[0]);
-		this.remove(btn[1]);
-		this.remove(btn[2]);
-		this.remove(btn[3]);
-		this.remove(btn[4]);
-		this.remove(label1);
-		this.remove(label2);
-		
-		this.setSize(400, 150);
-		this.setTitle("기준일 선택");
-		this.setLayout(new GridLayout(2, 1));
-		this.setVisible(false);
-		this.add( new JLabel("출력할 기준일을 선택하세요", JLabel.CENTER));
-		this.add(datePanel);
-		this.setVisible(true);
+		targetPanel.removeAll();
+		targetPanel.setVisible(false);
+		targetPanel.setLayout(new GridLayout(1, 1, 25, 25));
+		targetPanel.add(bottomPanel);
+		targetPanel.setVisible(true);
 		unitIndex = btnIndex;		//단위를 저장
 		
 	}

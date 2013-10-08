@@ -19,7 +19,7 @@ public class Nth_InterpolatingPolynomial {
 	{
 		this.x = x;
 		this.y = y;
-		this.n = y.length -1;
+		this.n = n_t;
 		this.target_n = n_t;
 		blocked_func = new long[n+2][n+2];
 		n_th_poly = new long [n+2];
