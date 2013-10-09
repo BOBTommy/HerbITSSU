@@ -1,16 +1,19 @@
 package Integrated;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 
 import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
+import javax.swing.JTextField;
 
 import aurelienribon.slidinglayout.SLAnimator;
 import aurelienribon.slidinglayout.SLConfig;
@@ -27,19 +30,26 @@ class StorePanel extends JPanel{
 	
 	private OrderSystem os;
 	
+	private HashMap<JButton, String> inventory = new HashMap<JButton, String>();
+	
 	private final JSplitPane masterPanel = new JSplitPane();
 	private final SLPanel basePanel = new SLPanel();
 	private SLConfig invenCfg, graphCfg, regisCfg, modifCfg;
-	
 	private int currentMode = INVEN_MODE; 
-	private JPanel controlPanel = new JPanel();
-	private JPanel inventoryPanel = new JPanel();
-	private JPanel modificationPanel = new JPanel();
-	private StoreGraphPanel inventoryGraph = new StoreGraphPanel();
 	
+	private JPanel controlPanel = new JPanel();
 	private JButton controlInven = new JButton("<html><body style='height: 20px; vertical-align:middle; font-size: 12px'>목록 관리</body></html>");
 	private JButton controlRegis = new JButton("<html><body style='height: 20px; vertical-align:middle; font-size: 12px'>항목 추가</body></html>");
 	private JButton controlModif = new JButton("<html><body style='height: 20px; vertical-align:middle; font-size: 12px'>항목 수정</body></html>");
+	
+	private JPanel inventoryPanel = new JPanel();
+	
+	private StoreGraphPanel inventoryGraph = new StoreGraphPanel();
+	
+	private JPanel modificationPanel = new JPanel();
+	private JLabel modifIDLbl, modifNameLbl, modifUnitLbl, modifDateLbl;
+	private JTextField modifID, modifName, modifUnit, modifDate;
+	private JButton modifOK, modifCancel;
 	
 	public StorePanel(OrderSystem os) {
 		this.os = os;
@@ -53,13 +63,35 @@ class StorePanel extends JPanel{
 		controlPanel.add(controlModif);
 		
 		//inventoryPanel
-		inventoryPanel.setBackground(Color.BLUE);
-		inventoryPanel.setLayout(new GridLayout(10, 10));
+		//inventoryPanel.setBackground(Color.BLUE);
 		loadInventory();
+		changeMode(MODIF_MODE, false); ////////////////////////////////////////INVEN_MODE by Default
 		
 		//modificationPanel
-		modificationPanel.setBackground(Color.MAGENTA);
-		
+		modifIDLbl = new JLabel("등록번호");
+		modifNameLbl = new JLabel("이름");
+		modifUnitLbl = new JLabel("단위");
+		modifDateLbl = new JLabel("최종수정일");
+		modifID = new JTextField(5);
+		modifName = new JTextField(10);
+		modifUnit = new JTextField(10);
+		modifDate = new JTextField(16);
+		modifOK = new JButton("수정하기");
+		modifCancel = new JButton("취소");
+		modifID.setEditable(false);
+		modifDate.setEditable(false);
+		modifOK.addActionListener(new ModificationListener());
+		modifCancel.addActionListener(new ModificationListener());
+		modificationPanel.add(modifIDLbl);
+		modificationPanel.add(modifID);
+		modificationPanel.add(modifNameLbl);
+		modificationPanel.add(modifName);
+		modificationPanel.add(modifUnitLbl);
+		modificationPanel.add(modifUnit);
+		modificationPanel.add(modifDateLbl);
+		modificationPanel.add(modifDate);
+		modificationPanel.add(modifOK);
+		modificationPanel.add(modifCancel);
 		
 		//Sliding Configs
 		invenCfg = new SLConfig(basePanel).gap(0, 0).row(1f).col(1f)
@@ -68,11 +100,12 @@ class StorePanel extends JPanel{
 				.place(0, 0, inventoryPanel).place(0, 1, inventoryGraph);
 		regisCfg = new SLConfig(basePanel).gap(0, 0).row(1f).col(1f).col(4f)
 				.place(0, 0, inventoryPanel).place(0, 1, modificationPanel);
-		modifCfg = regisCfg;
+		modifCfg = new SLConfig(basePanel).gap(0, 0).row(1f).col(1f).col(4f)
+				.place(0, 0, inventoryPanel).place(0, 1, modificationPanel);
 		
 		//basePanel
 		basePanel.setTweenManager(SLAnimator.createTweenManager());
-		basePanel.initialize(invenCfg);
+		basePanel.initialize(modifCfg);
 		
 		masterPanel.setOrientation(JSplitPane.VERTICAL_SPLIT);
 		masterPanel.setDividerSize(1);
@@ -95,7 +128,6 @@ class StorePanel extends JPanel{
 			}
 			
 			basePanel.createTransition().push(SLkf).play();
-			currentMode = INVEN_MODE;
 		}
 	};
 	
@@ -111,7 +143,6 @@ class StorePanel extends JPanel{
 			}
 			
 			basePanel.createTransition().push(SLkf).play();
-			currentMode = GRAPH_MODE;
 		}
 	};
 	
@@ -127,7 +158,21 @@ class StorePanel extends JPanel{
 			}
 			
 			basePanel.createTransition().push(SLkf).play();
-			currentMode = REGIS_MODE;
+		}
+	};
+	
+	private final Runnable modifAction = new Runnable() {
+		public void run() {
+			SLKeyframe SLkf = new SLKeyframe(modifCfg, 0.6f);
+			
+			if (currentMode == INVEN_MODE) {
+				SLkf.setStartSide(SLSide.RIGHT, modificationPanel);
+			} else if (currentMode == GRAPH_MODE) {
+				SLkf.setEndSide(SLSide.RIGHT, inventoryGraph)
+					.setStartSide(SLSide.RIGHT, modificationPanel);
+			}
+			
+			basePanel.createTransition().push(SLkf).play();
 		}
 	};
 	
@@ -136,11 +181,11 @@ class StorePanel extends JPanel{
 			JButton src = (JButton) e.getSource();
 			
 			if (src == controlInven) {
-				invenAction.run();
+				changeMode(INVEN_MODE);
 			} else if (src == controlRegis) {
-				regisAction.run();
+				changeMode(REGIS_MODE);
 			} else if (src == controlModif) {
-				regisAction.run();
+				changeMode(MODIF_MODE);
 			}
 		}
 	}
@@ -148,43 +193,82 @@ class StorePanel extends JPanel{
 	class InventoryListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			JButton src = (JButton) e.getSource();
-			String invenName = src.getText();
-			String sql = "select * from herb_inventory where "
-					+ "inventory_name = '" + invenName + "'";
+			String invenName = inventory.get(src);
 			
-			try {
-				java.sql.ResultSet rs = os.db.exec(sql);
-				rs.next();
+			if (currentMode != MODIF_MODE) {
+				String sql = "select * from herb_inventory where "
+						+ "inventory_name = '" + invenName + "'";
 				
-				sql = "select * from herb_invenlog where "
-						+ "invenlog_inventory_id = '" + rs.getInt("inventory_id") + "' "
-						+ "ORDER BY invenlog_regdate DESC";
-				rs = os.db.exec(sql);
-				
-				System.out.println(invenName + " -----------------------------");
-				int num = 10;
-				int cnt = 0;
-				int tmpPoints[] = new int[num];
-				String tmpLabels[] = new String[num];
-				while (rs.next() && (num-cnt > 0)) {
-					System.out.println(
-							rs.getInt("invenlog_id") + "|"
-							+ rs.getInt("invenlog_inventory_id")	+ "|"
-							+ rs.getInt("invenlog_value")+ "|"
-							+ DateUtil.convTimeValueToUserTypedString(DateUtil.convUserTypedStringToTimeValue(rs.getString("invenlog_regdate"), "yyyy-MM-dd kk:mm:ss"), "MM-dd")
-							);
+				try {
+					java.sql.ResultSet rs = os.db.exec(sql);
+					rs.next();
 					
-					tmpLabels[cnt] = DateUtil.convTimeValueToUserTypedString(DateUtil.convUserTypedStringToTimeValue(rs.getString("invenlog_regdate"), "yyyy-MM-dd kk:mm:ss"), "MM-dd");
-					tmpPoints[cnt] = rs.getInt("invenlog_value");
-					cnt++;
+					sql = "select * from herb_invenlog where "
+							+ "invenlog_inventory_id = '" + rs.getInt("inventory_id") + "' "
+							+ "ORDER BY invenlog_regdate DESC";
+					rs = os.db.exec(sql);
+					
+					System.out.println(invenName + " -----------------------------");
+					int num = 10;
+					int cnt = 0;
+					int tmpPoints[] = new int[num];
+					String tmpLabels[] = new String[num];
+					while (rs.next() && (num-cnt > 0)) {
+						System.out.println(
+								rs.getInt("invenlog_id") + "|"
+								+ rs.getInt("invenlog_inventory_id")	+ "|"
+								+ rs.getInt("invenlog_value")+ "|"
+								+ DateUtil.convTimeValueToUserTypedString(DateUtil.convUserTypedStringToTimeValue(rs.getString("invenlog_regdate"), "yyyy-MM-dd kk:mm:ss"), "MM-dd")
+								);
+						
+						tmpLabels[cnt] = DateUtil.convTimeValueToUserTypedString(DateUtil.convUserTypedStringToTimeValue(rs.getString("invenlog_regdate"), "yyyy-MM-dd kk:mm:ss"), "MM-dd");
+						tmpPoints[cnt] = rs.getInt("invenlog_value");
+						cnt++;
+					}
+					
+					inventoryGraph.setPoints(tmpPoints, tmpLabels);
+				} catch (SQLException ex) {
+					ex.printStackTrace();
 				}
 				
-				inventoryGraph.setPoints(tmpPoints, tmpLabels);
-			} catch (SQLException ex) {
-				ex.printStackTrace();
+				changeMode(GRAPH_MODE);
+			} else {
+				try {
+					java.sql.ResultSet rs = os.db
+							.exec("select * from herb_inventory "
+									+ "where inventory_name='" + invenName + "'");
+					
+					if (rs.next()) {
+						modifID.setText(rs.getString("inventory_id"));
+						modifName.setText(rs.getString("inventory_name"));
+						modifUnit.setText(rs.getString("inventory_unit"));
+						modifDate.setText(rs.getString("inventory_regdate"));
+					}
+				} catch (SQLException ex) {
+					ex.printStackTrace();
+				}
+			}
+		}
+	}
+	
+	class ModificationListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			JButton src = (JButton) e.getSource();
+			if (src == modifOK) {
+				os.db.exec("update herb_inventory set "
+						+ "inventory_name='" + modifName.getText() + "', "
+						+ "inventory_unit='" + modifUnit.getText() + "', "
+						+ "inventory_regdate=now() "
+						+ "where inventory_id='" + modifID.getText() + "'");
+				loadInventory();
+			} else if (src == modifCancel) {
+				modifID.setText("");
+				modifName.setText("");
+				modifUnit.setText("");
+				modifDate.setText("");
 			}
 			
-			graphAction.run();
+			changeMode(INVEN_MODE);
 		}
 	}
 	
@@ -212,22 +296,24 @@ class StorePanel extends JPanel{
 			String DATE_FORMAT = "yyyy-MM-dd kk:mm:ss";
 			SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT);
 			
-			JPanel buttonPanel = new JPanel(new GridLayout(1, 2));
-			buttonPanel.add(new JButton("Plus"));
-			buttonPanel.add(new JButton("Minus"));
-			
-			inventoryPanel.add(buttonPanel);
-			
 			//Load Inventory List and Create Buttons
 			
 			java.sql.ResultSet rs = os.db
 					.exec("select * from herb_inventory");
 			
-			int cnt = 0;
+			inventoryPanel.removeAll();
+			inventory.clear();
+			JButton inventoryBtn; //Tmp
 			while (rs.next()) {
-				inventoryBtn[cnt] = new JButton(rs.getString("inventory_name"));
-				inventoryBtn[cnt].addActionListener(new InventoryListener());
-				inventoryPanel.add(inventoryBtn[cnt]);
+				inventoryBtn = new JButton(
+						"<html>" +
+						"<body style='vertical-align:middle; font-size: 16px;'>" +
+						rs.getString("inventory_name") +
+						"</body>" +
+						"</html>");
+				inventoryBtn.addActionListener(new InventoryListener());
+				inventory.put(inventoryBtn, rs.getString("inventory_name"));
+				inventoryPanel.add(inventoryBtn);
 				
 				System.out.println(
 						rs.getInt("inventory_id") + "|"
@@ -237,46 +323,28 @@ class StorePanel extends JPanel{
 								new ParsePosition(0))
 						);
 			}
-			
-			
-			
-			//Load Inventory Logs
-			
-			System.out.println("--------------------------------------");
-			
-			rs = os.db
-					.exec("select * from herb_invenlog");
-			
-			while (rs.next()) {
-				System.out.println(
-						rs.getInt("invenlog_id") + "|"
-						+ rs.getInt("invenlog_inventory_id")	+ "|"
-						+ rs.getInt("invenlog_value")+ "|"
-						+ format.parse(rs.getString("invenlog_regdate"),
-								new ParsePosition(0))
-						);
-			}
+			inventoryPanel.updateUI();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	private String inventoryList[] = new String[20]; //Temporary 20 restricted
-	private JButton inventoryBtn[] = new JButton[inventoryList.length];
+	private void changeMode(int newMode) { changeMode(newMode, true); }
+	private void changeMode(int newMode, boolean actionate) {
+		if (newMode == INVEN_MODE)
+			inventoryPanel.setLayout(new GridLayout(inventory.size() / 6 + 1, 6));
+		else
+			inventoryPanel.setLayout(new GridLayout(inventory.size() / 2 + 1, 2));
+		
+		if (actionate) {
+			if (newMode == INVEN_MODE) invenAction.run();
+			else if (newMode == GRAPH_MODE) graphAction.run();
+			else if (newMode == REGIS_MODE) regisAction.run();
+			else if (newMode == MODIF_MODE) modifAction.run();
+		}
+		
+		currentMode = newMode;
+	}
 	
 	public void dataUpdate() {
 		
