@@ -25,14 +25,14 @@ class OrderSystem extends JFrame{
 	Container contentPane;		//컨텐츠를 포함하는 컨텐트팬
 	DBGenerator db;
 	
-	StorePanel storePanel;			//재고관리 탭
 	OrderPanel orderPanel;		//주문 탭
+	StorePanel storePanel;			//재고관리 탭
 	AdminPanel adminPanel;			//관리자메뉴 탭
 
 	
 	public void sync() {
-		storePanel.dataUpdate();
 		orderPanel.dataUpdate();
+		storePanel.dataUpdate();
 		adminPanel.dataUpdate();
 	}
 	
@@ -49,14 +49,14 @@ class OrderSystem extends JFrame{
         addWindowListener( new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent we) {
-                if( db.closeDB() ){
+                if( db != null && db.closeDB() ){
                 	System.out.println("db closed");
                 }
                 System.exit(0);
             }
         } );
         
-		if( db.connectDB() ){
+		if( db != null && db.connectDB() ){
 			System.out.println("connected to db");;
 		}
 
@@ -73,12 +73,11 @@ class OrderSystem extends JFrame{
 		HerbPane pane = new HerbPane();		//HerbPane에 주문관리, 매장관리, 고객관리 탭을 추가한다.
 		
 		storePanel = new StorePanel(this);
-		
-		pane.addTab("<html><body leftmargin=15 topmargin=8 marginwidth=15 marginheight=5>재고관리</body></html>", storePanel);				//매장관리 탭을 추가
+		pane.addTab("<html><body leftmargin=15 topmargin=8 marginwidth=15 marginheight=5 style='font-size: 18pt;'>재고관리</body></html>", storePanel);				//매장관리 탭을 추가
 		orderPanel = new OrderPanel(this);
-		pane.addTab("<html><body leftmargin=15 topmargin=8 marginwidth=15 marginheight=5>주문관리</body></html>", orderPanel);				//주문관리 탭을 추가
+		pane.addTab("<html><body leftmargin=15 topmargin=8 marginwidth=15 marginheight=5 style='font-size: 18pt;'>주문관리</body></html>", orderPanel);				//주문관리 탭을 추가
 		adminPanel = new AdminPanel(this);
-		pane.addTab("<html><body leftmargin=15 topmargin=8 marginwidth=15 marginheight=5>관리자메뉴</body></html>", adminPanel);				//고객관리 탭을 추가
+		pane.addTab("<html><body leftmargin=15 topmargin=8 marginwidth=15 marginheight=5 style='font-size: 18pt;'>관리자메뉴</body></html>", adminPanel);				//고객관리 탭을 추가
 		return pane;
 	}
 	
