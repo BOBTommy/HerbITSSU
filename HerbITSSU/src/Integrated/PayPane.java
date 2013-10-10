@@ -17,6 +17,7 @@ import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 
 import AnimationComponent.AniButton;
+import Database.DBGenerator;
 
 public class PayPane extends JPanel{
 	
@@ -46,6 +47,7 @@ public class PayPane extends JPanel{
 	private JButton backBtn;
 	private AniButton cancelBtn;
 	
+	
 	public PayPane(String text, OrderPanel orderPanel){
 		
 		this.parent = orderPanel;
@@ -54,6 +56,7 @@ public class PayPane extends JPanel{
 		label.setFont(new Font("Sans", Font.BOLD, 30));
 		label.setVerticalAlignment(SwingConstants.CENTER);
 		label.setHorizontalAlignment(SwingConstants.CENTER);
+		//this.db = this.parent.os.db;
 		
 		blackline = BorderFactory.createLineBorder(Color.black,5);
 		this.setBorder(blackline);
@@ -107,6 +110,11 @@ public class PayPane extends JPanel{
 		String total = Integer.toString(this.total);
 		totalLabel.setText("총 결제액 : \t" + total);
 		
+		//추천 메뉴 업데이트
+		String recommand = "<html>추천 메뉴는 다음과 같습니다.<br>";
+		recommand += PythonSyncModule.recommandString + "</html>";
+		recommandLabel.setText(recommand);
+		
 		//판매 절차 업데이트
 		String rule = "<html>판매 절차<br>"
 				+ "1. 주문 내역을 확인합니다.<br>"
@@ -121,6 +129,7 @@ public class PayPane extends JPanel{
 		
 		this.centerPanel.add(dateLabel);
 		this.centerPanel.add(totalLabel);
+		this.centerPanel.add(recommandLabel);
 		//추천 메뉴
 		this.centerPanel.add(ruleLabel);
 	}
