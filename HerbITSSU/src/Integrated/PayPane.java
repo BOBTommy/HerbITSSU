@@ -96,6 +96,15 @@ public class PayPane extends JPanel{
 				cancelBtn.getAniAction().run();
 			}
 		});
+		
+		this.cashBtn.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// 현금 결제
+				
+			}
+		}); 
 	}
 	
 	public void updateCenterPanel(){
