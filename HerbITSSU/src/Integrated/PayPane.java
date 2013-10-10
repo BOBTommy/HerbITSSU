@@ -105,6 +105,15 @@ public class PayPane extends JPanel{
 				
 			}
 		}); 
+		
+		this.cardBtn.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// 카드 결제
+				
+			}
+		});
 	}
 	
 	public void updateCenterPanel(){

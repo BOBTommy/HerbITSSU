@@ -16,6 +16,7 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 import AnimationComponent.AniButton;
+import Database.CustomerOrder;
 import aurelienribon.slidinglayout.SLAnimator;
 import aurelienribon.slidinglayout.SLConfig;
 import aurelienribon.slidinglayout.SLKeyframe;
@@ -27,6 +28,7 @@ class OrderPanel extends JPanel {
 	private String modyName;
 	private int flag=0;
 	private int orderTotal; //주문 총 합계
+	private ArrayList<CustomerOrder> orderList = new ArrayList<CustomerOrder>();
 	
 	public String returnName()
 	{
@@ -84,6 +86,20 @@ class OrderPanel extends JPanel {
 			data[pos][3] = Integer.toString(sumOfEachItemPrice);
 			if(flag==0)
 				orderListTableModel.setDataVector(data, columnNames);
+			
+			boolean isExist = false;
+			
+			for(int i=0; i< orderList.size(); i++){
+				if(orderList.get(i).getMenuName().compareTo(data[pos][0]) == 0)
+				{
+					orderList.get(i).addMenuCount();
+					isExist = true;
+				}
+			}
+			
+			if( !isExist ){
+				orderList.add(new CustomerOrder(data[pos][0], 1));
+			}
 			
 			orderTotal += Integer.parseInt(price);	//총 주문 합계에 현재 주문된 값을 더한다.
 
@@ -357,6 +373,7 @@ class OrderPanel extends JPanel {
 	
 	public void resetTotal(){	//주문취소(초기화시)
 		this.orderTotal = 0;
+		this.orderList.clear();
 	}
 	
 }
