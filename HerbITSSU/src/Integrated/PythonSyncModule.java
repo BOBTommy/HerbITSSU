@@ -2,6 +2,9 @@ package Integrated;
 
 import java.awt.BorderLayout;
 import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -50,9 +53,13 @@ public class PythonSyncModule extends JFrame{
 	
 	public void updateTextarea(){
 		this.getFromDB();
+		while(true){
+			if(new File("C:\\herb.dat").exists())
+				break;
+		}
 		JythonDriver driver = new JythonDriver("Apriori");
-		textStr += "Result of Apriori Algorithm\n";
 		textStr += driver.getAprioriString();
+		textStr += "\n동기화가 완료되었습니다. 창을 닫아주세요.";
 		textArea.setText(textStr);
 	}
 	
@@ -72,14 +79,6 @@ public class PythonSyncModule extends JFrame{
 		ResultSet rs = this.os.db.exec("SELECT * FROM herb_order");
 		textStr += "Result of query in herb DB\n";
 		try{
-			
-			/*while(rs.next()){
-				for(int i=0; i<this.orderList.size();i++){
-					if(this.orderList.get(i).getOrderID() == rs.getInt(1))
-						this.orderList.get(i).addOrder(rs.getInt(2));
-				}
-			}*/
-			
 			//Get All of Order
 			while(rs.next()){
 				int orderID = rs.getInt(1);
@@ -112,7 +111,20 @@ public class PythonSyncModule extends JFrame{
 	public void makeList(){
 		if(this.orderList.size() < 100)
 			return;
-		//BufferedWriter writer = new BufferedWriter()
+		try {
+			BufferedWriter writer = new BufferedWriter(new FileWriter(new  File("C:\\apriori.dat")));
+			for(int i=0; i<this.orderList.size(); i++){
+				if(this.orderList.get(i).getOrderCount() < 2)
+					continue;
+				writer.write(this.orderList.get(i).toString());
+				writer.newLine();
+			}
+			
+			writer.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 }

@@ -29,7 +29,16 @@ class HerbApriori(HerbAprioriType):
     rules = ""
 
     def __init__(self, Set = [[1,3,4], [2,3,5], [1,2,3,5], [2,5]]):
-        self.Set = [[1,3,4], [2,3,5], [1,2,3,5], [2,5]]
+		#f = open('C:/apriori.dat','r')
+		#while 1:
+		#	line = f.readline()
+		#	if not line: break
+		#	li = line.split(,)
+		#	int_li = map(int,li)
+		#	self.Set.append(int_li)
+			
+		#if len(self.Set) < 2:
+			self.Set = [[1,3,4], [2,3,5], [1,2,3,5], [2,5]]
         
     def loadDataSet(self):
         return [[1,3,4], [2,3,5], [1,2,3,5], [2,5]]
@@ -117,17 +126,30 @@ class HerbApriori(HerbAprioriType):
     def getResult(self):
         self.Set = self.loadDataSet()
         
-        print "#### Data Set is loaded####"
+        #print "#### Data Set is loaded####"
         #print self.Set
         
         L, suppData = self.apriori(self.Set,minSupport=0.5)
-        print "#### Support Data is set####"
+        #print "#### Support Data is set####"
         #print suppData
         
-        print "#### Result Rules are generated####"
+        #print "#### Result Rules are generated####"
         self.rules = self.generateRules(L,suppData,minConf=0.5)
         
+        f = open('C:/herb.dat','w')
+        my_str = ''
+        
+        for item in self.rules:
+            my_str = ''
+            for im in item[0]:
+                my_str += str(int(im))
+            my_str += '|'
+            for im in item[1]:
+                my_str += str(int(im))
+                my_str += ' '
+            f.write(my_str)
+            f.write('\n')
+        
     def getResultString(self):
-        #return self.rules
         return str(self.rules)
         

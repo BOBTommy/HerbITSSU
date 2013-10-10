@@ -166,7 +166,7 @@ public class AdminPanel extends JPanel {
 			}
 		});
 		
-		aprioriBtn = new JButton("Apriori Sync");
+		aprioriBtn = new JButton("메뉴 예측 실행");
 		aprioriBtn.setFont(bigFont);
 		aprioriBtn.addActionListener(new ActionListener() {
 			
