@@ -37,7 +37,6 @@ public class PayPane extends JPanel{
 	private JLabel label = new JLabel();
 	private Border blackline;
 	private int total;						//주문 총액
-	private String curDateTimeDB;
 	
 	private JPanel centerPanel;
 	private JPanel bottomPanel;
@@ -105,7 +104,9 @@ public class PayPane extends JPanel{
 		/*
 		 * 
 		 * DB QUERY MODIFICATION NEEDED
-		 * DATE TIME -> NOW() Function not worked
+		 * DATE TIME -> NOW() Function not working
+		 * Solution 1 : Query direct modification.
+		 * Solution 2 : Default value modification in myadmin Page
 		 */
 		this.cashBtn.addActionListener(new ActionListener() {
 			
@@ -133,7 +134,9 @@ public class PayPane extends JPanel{
 		/*
 		 * 
 		 * DB QUERY MODIFICATION NEEDED
-		 * DATE TIME -> NOW() Function not worked
+		 * DATE TIME -> NOW() Function not working
+		 * Solution 1 : Query direct modification.
+		 * Solution 2 : Default value modification in myadmin Page
 		 */
 		this.cardBtn.addActionListener(new ActionListener() {
 			
@@ -166,7 +169,6 @@ public class PayPane extends JPanel{
 		Date dt = new Date();
 		SimpleDateFormat dtForm = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		String curTime = dtForm.format(dt.getTime());
-		this.curDateTimeDB = dtForm.format(dt.getTime());
 		dateLabel.setText("결제 일시 : \t\t" + curTime);
 		
 		//총 결제액 업데이트
