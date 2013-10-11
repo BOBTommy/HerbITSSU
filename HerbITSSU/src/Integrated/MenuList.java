@@ -9,6 +9,9 @@ public class MenuList {
 	public static Dictionary<Integer, String>herbMenu = new Hashtable<Integer, String>();
 	//Integer = menu_id, String = menu_name
 	
+	public static Dictionary<String, Integer>herbMenuInt = new Hashtable<String, Integer>();
+	//String = Key, Integer = value
+	
 	
 	private MenuList(){
 		// Menu List 는 생성자를 쓰지 않음

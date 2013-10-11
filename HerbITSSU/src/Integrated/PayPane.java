@@ -6,7 +6,10 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 import javax.swing.BorderFactory;
@@ -17,6 +20,7 @@ import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 
 import AnimationComponent.AniButton;
+import Database.CustomerOrder;
 import Database.DBGenerator;
 
 public class PayPane extends JPanel{
@@ -33,6 +37,7 @@ public class PayPane extends JPanel{
 	private JLabel label = new JLabel();
 	private Border blackline;
 	private int total;						//주문 총액
+	private String curDateTimeDB;
 	
 	private JPanel centerPanel;
 	private JPanel bottomPanel;
@@ -68,10 +73,11 @@ public class PayPane extends JPanel{
 		this.cashBtn = new JButton("현금결제");
 		this.backBtn = new JButton("결제취소");
 		this.total =  0;
-		
+			
 		updatePanel();
 		updateBtnEvent();
 	}
+	
 	
 	private void updatePanel(){
 		this.setLayout(new BorderLayout());
@@ -102,7 +108,19 @@ public class PayPane extends JPanel{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// 현금 결제
-				
+				ArrayList<CustomerOrder> orderList = parent.getOrderList();
+				parent.latestOrderID++; //order_id 1 추가
+				for(int i=0; i<orderList.size(); i++){
+					//System.out.println(orderList.get(i).getMenuName()
+					//		+ " : " + MenuList.herbMenuInt.get(orderList.get(i).getMenuName()));
+					//System.out.println("Order Count : " + orderList.get(i).getMenuCount());
+					parent.os.db.exec("INSERT INTO herb_order ("
+							+ "order_id, order_menu_id, order_count,  order_cash)"
+							+ " VALUES(" + parent.latestOrderID + ", " 
+							+ MenuList.herbMenuInt.get(orderList.get(i).getMenuName()).intValue() + ", "
+							+ orderList.get(i).getMenuCount() +", "
+							+ 1 + ");");
+				}
 			}
 		}); 
 		
@@ -111,7 +129,19 @@ public class PayPane extends JPanel{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// 카드 결제
-				
+				ArrayList<CustomerOrder> orderList = parent.getOrderList();
+				parent.latestOrderID++; //order_id 1 추가
+				for(int i=0; i<orderList.size(); i++){
+					//System.out.println(orderList.get(i).getMenuName()
+					//		+ " : " + MenuList.herbMenuInt.get(orderList.get(i).getMenuName()));
+					//System.out.println("Order Count : " + orderList.get(i).getMenuCount());
+					parent.os.db.exec("INSERT INTO herb_order ("
+							+ "order_id, order_menu_id, order_count,  order_cash)"
+							+ " VALUES(" + parent.latestOrderID + ", " 
+							+ MenuList.herbMenuInt.get(orderList.get(i).getMenuName()).intValue() + ", "
+							+ orderList.get(i).getMenuCount() +", "
+							+ 0 + ");");
+				}
 			}
 		});
 	}
@@ -120,8 +150,9 @@ public class PayPane extends JPanel{
 		
 		//결제 시간 업데이트
 		Date dt = new Date();
-		SimpleDateFormat dtForm = new SimpleDateFormat("yyyy.MM.dd HH.mm.ss");
+		SimpleDateFormat dtForm = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		String curTime = dtForm.format(dt.getTime());
+		this.curDateTimeDB = dtForm.format(dt.getTime());
 		dateLabel.setText("결제 일시 : \t\t" + curTime);
 		
 		//총 결제액 업데이트

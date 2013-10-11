@@ -5,6 +5,7 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -29,6 +30,7 @@ class OrderPanel extends JPanel {
 	private int flag=0;
 	private int orderTotal; //주문 총 합계
 	private ArrayList<CustomerOrder> orderList = new ArrayList<CustomerOrder>();
+	public int latestOrderID;
 	
 	public String returnName()
 	{
@@ -164,6 +166,25 @@ class OrderPanel extends JPanel {
 			}
 			menuPanel.add(payButton);
 			menuPanel.updateUI();
+			
+			ResultSet menuListQuery = os.db.exec("SELECT * FROM herb_menu");
+			
+			try{//herb_menu table 에서 메뉴 내용을 얻어옴
+				while(menuListQuery.next()){
+					MenuList.herbMenuInt.put(menuListQuery.getString(2), //menu_name
+							new Integer(menuListQuery.getInt(1)) // menu_id
+							);
+				}
+				ResultSet orderQuery = os.db.exec("SELECT order_id FROM herb_order");
+				while(orderQuery.next()){
+					if(this.latestOrderID < orderQuery.getInt(1))
+						this.latestOrderID = orderQuery.getInt(1);
+					//가장 최근의 orderID를 받아온다.
+				}
+			}catch(SQLException ex){
+				ex.printStackTrace();
+			}
+			
 		} catch (SQLException e) {
 
 		}
@@ -239,6 +260,7 @@ class OrderPanel extends JPanel {
 
 	public OrderPanel(OrderSystem os) {
 		this.os = os;
+		this.latestOrderID = 0; //가장 최근 거래 번호를 초기화
 
 		categoryPanel = new JPanel();
 		menuPanel = new JPanel();
@@ -374,6 +396,10 @@ class OrderPanel extends JPanel {
 	public void resetTotal(){	//주문취소(초기화시)
 		this.orderTotal = 0;
 		this.orderList.clear();
+	}
+	
+	public ArrayList<CustomerOrder> getOrderList(){
+		return this.orderList;
 	}
 	
 }

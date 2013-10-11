@@ -1,5 +1,6 @@
 package Database;
 
+
 //고객의 주문 상황
 
 public class CustomerOrder {
@@ -10,6 +11,7 @@ public class CustomerOrder {
 	public CustomerOrder(String menuName, int menuCount){
 		this.menuName = menuName;
 		this.menuCount = menuCount;
+		
 	}
 	
 	public String getMenuName(){
