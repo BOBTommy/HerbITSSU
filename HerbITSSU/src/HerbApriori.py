@@ -29,15 +29,15 @@ class HerbApriori(HerbAprioriType):
     rules = ""
 
     def __init__(self, Set = [[1,3,4], [2,3,5], [1,2,3,5], [2,5]]):
-		#f = open('C:/apriori.dat','r')
-		#while 1:
-		#	line = f.readline()
-		#	if not line: break
-		#	li = line.split(,)
-		#	int_li = map(int,li)
-		#	self.Set.append(int_li)
+		f = open('C:/apriori.dat','r')
+		while 1:
+			line = f.readline()
+			if not line: break
+			li = line.split(',')
+			int_li = map(int,li)
+			self.Set.append(int_li)
 			
-		#if len(self.Set) < 2:
+		if len(self.Set) < 2:
 			self.Set = [[1,3,4], [2,3,5], [1,2,3,5], [2,5]]
         
     def loadDataSet(self):

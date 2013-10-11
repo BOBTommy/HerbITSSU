@@ -102,13 +102,20 @@ public class PayPane extends JPanel{
 				cancelBtn.getAniAction().run();
 			}
 		});
-		
+		/*
+		 * 
+		 * DB QUERY MODIFICATION NEEDED
+		 * DATE TIME -> NOW() Function not worked
+		 */
 		this.cashBtn.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// 현금 결제
 				ArrayList<CustomerOrder> orderList = parent.getOrderList();
+				
+				if(orderList.isEmpty()) return;	//Error Check
+				
 				parent.latestOrderID++; //order_id 1 추가
 				for(int i=0; i<orderList.size(); i++){
 					//System.out.println(orderList.get(i).getMenuName()
@@ -123,13 +130,20 @@ public class PayPane extends JPanel{
 				}
 			}
 		}); 
-		
+		/*
+		 * 
+		 * DB QUERY MODIFICATION NEEDED
+		 * DATE TIME -> NOW() Function not worked
+		 */
 		this.cardBtn.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// 카드 결제
 				ArrayList<CustomerOrder> orderList = parent.getOrderList();
+				
+				if(orderList.isEmpty()) return;	//Error Check
+				
 				parent.latestOrderID++; //order_id 1 추가
 				for(int i=0; i<orderList.size(); i++){
 					//System.out.println(orderList.get(i).getMenuName()
@@ -198,6 +212,29 @@ public class PayPane extends JPanel{
 	public void setTotal(int total){
 		this.total = total;
 		this.totalLabel.setText("총 결제액 : " + Integer.toString(this.total));
+	}
+	
+	public void getRecommand(ArrayList<CustomerOrder> orderList){
+		if(orderList.isEmpty()) //주문 내역이 없을때
+			return;
+		if(MenuList.herbRecMenuList.isEmpty())
+			return;
+		//List가 비어있으면 따로 할일 없음
+		
+		//그렇지 않다면
+		String recText = "";
+		boolean flag = false; //추천할 아이템이 텍스트에 나타나야 하는지 체크
+		for(int i=0; i<orderList.size(); i++){
+			if(MenuList.herbRecMenuList.get(
+					orderList.get(i).getMenuName()) != null){
+				flag = true;
+				recText += orderList.get(i).getMenuName() + "에 대하여\n" +
+						MenuList.herbRecMenuList.get(orderList.get(i).getMenuName())
+						+ "을 추천합니다.\n";
+			}
+		}
+		if(flag)//추천된 메뉴가 있는 경우
+			ruleLabel.setText(recText);
 	}
 
 }

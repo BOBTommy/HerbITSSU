@@ -351,6 +351,9 @@ class OrderPanel extends JPanel {
 		@Override
 		public void run() {
 			payPane.setTotal(orderTotal);
+			//추천 메뉴 스트링 촏기화
+			PythonSyncModule.recommandString = "추천 메뉴를 등록하기에는 누적된 주문량이 부족합니다.";
+			payPane.getRecommand(orderList);
 			basePanel
 					.createTransition()
 					.push(new SLKeyframe(payCfg, 0.6f)
