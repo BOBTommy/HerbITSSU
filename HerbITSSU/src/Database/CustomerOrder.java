@@ -7,11 +7,12 @@ public class CustomerOrder {
 
 	private String menuName;
 	private int menuCount;
+	private int price;
 	
-	public CustomerOrder(String menuName, int menuCount){
+	public CustomerOrder(String menuName, int menuCount, int price){
 		this.menuName = menuName;
 		this.menuCount = menuCount;
-		
+		this.price = price;
 	}
 	
 	public String getMenuName(){
@@ -22,8 +23,16 @@ public class CustomerOrder {
 		return this.menuCount;
 	}
 	
+	public int getMenuPrice(){
+		return this.price;
+	}
+	
 	public void addMenuCount(){
 		this.menuCount++;
+	}
+	
+	public int getTotalPrice() {
+		return (this.menuCount * price);
 	}
 	
 }

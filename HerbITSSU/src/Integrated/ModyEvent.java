@@ -40,7 +40,7 @@ public class ModyEvent {
 		this.os=os;
 		leftpanel = pan;
 		leftpanel.removeAll();
-		menupane = new OrderPanel(this.os,1);
+		menupane = new OrderPanel(this.os, true);
 		modypane = new JPanel();
 		modypane.setLayout(new FlowLayout());
 		leftpanel.setLayout(new BorderLayout());
@@ -120,7 +120,7 @@ public class ModyEvent {
 		});
 		
 		modypane.add(search);
-		leftpanel.add("South",modypane);
+		leftpanel.add("North",modypane);
 		leftpanel.setVisible(false);
 		leftpanel.setVisible(true);
 		

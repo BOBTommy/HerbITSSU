@@ -2,7 +2,6 @@ package Integrated;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
@@ -15,6 +14,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
 
@@ -33,7 +33,7 @@ class StorePanel extends JPanel{
 	
 	private OrderSystem os;
 	
-	private HashMap<JButton, String> inventory = new HashMap<JButton, String>();
+	private HashMap<JButton, String> inventoryList = new HashMap<JButton, String>();
 	
 	private final JSplitPane masterPanel = new JSplitPane();
 	private final SLPanel basePanel = new SLPanel();
@@ -49,6 +49,9 @@ class StorePanel extends JPanel{
 	private JButton controlModif = new JButton(controlModifImg);
 	
 	private JPanel inventoryPanel = new JPanel();
+	private JScrollPane inventoryScroll = new JScrollPane(inventoryPanel,
+															JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+															JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 	
 	private StoreGraphPanel inventoryGraph = new StoreGraphPanel();
 	
@@ -79,7 +82,8 @@ class StorePanel extends JPanel{
 		controlPanel.add(menuPanel);
 		
 		//inventoryPanel
-		//inventoryPanel.setBackground(Color.BLUE);
+		inventoryScroll.setBorder(null);
+		inventoryPanel.setLayout(new ModifiedFlowLayout());
 		loadInventory();
 		changeMode(MODIF_MODE, false); ////////////////////////////////////////INVEN_MODE by Default
 		
@@ -111,13 +115,13 @@ class StorePanel extends JPanel{
 		
 		//Sliding Configs
 		invenCfg = new SLConfig(basePanel).gap(0, 0).row(1f).col(1f)
-				.place(0, 0, inventoryPanel);
-		graphCfg = new SLConfig(basePanel).gap(0, 0).row(1f).col(1f).col(4f)
-				.place(0, 0, inventoryPanel).place(0, 1, inventoryGraph);
-		regisCfg = new SLConfig(basePanel).gap(0, 0).row(1f).col(1f).col(4f)
-				.place(0, 0, inventoryPanel).place(0, 1, modificationPanel);
-		modifCfg = new SLConfig(basePanel).gap(0, 0).row(1f).col(1f).col(4f)
-				.place(0, 0, inventoryPanel).place(0, 1, modificationPanel);
+				.place(0, 0, inventoryScroll);
+		graphCfg = new SLConfig(basePanel).gap(0, 0).row(1f).col(294).col(1f)
+				.place(0, 0, inventoryScroll).place(0, 1, inventoryGraph);
+		regisCfg = new SLConfig(basePanel).gap(0, 0).row(1f).col(294).col(1f)
+				.place(0, 0, inventoryScroll).place(0, 1, modificationPanel);
+		modifCfg = new SLConfig(basePanel).gap(0, 0).row(1f).col(294).col(1f)
+				.place(0, 0, inventoryScroll).place(0, 1, modificationPanel);
 		
 		//basePanel
 		basePanel.setTweenManager(SLAnimator.createTweenManager());
@@ -209,7 +213,7 @@ class StorePanel extends JPanel{
 	class InventoryListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			JButton src = (JButton) e.getSource();
-			String invenName = inventory.get(src);
+			String invenName = inventoryList.get(src);
 			
 			if (currentMode != MODIF_MODE) {
 				String sql = "select * from herb_inventory where "
@@ -318,26 +322,16 @@ class StorePanel extends JPanel{
 					.exec("select * from herb_inventory");
 			
 			inventoryPanel.removeAll();
-			inventory.clear();
+			inventoryList.clear();
+			ImageIcon imageIcon;
 			JButton inventoryBtn; //Tmp
 			while (rs.next()) {
-				inventoryBtn = new JButton(
-						"<html>" +
-						"<body style='vertical-align:middle; font-size: 16px;'>" +
-						rs.getString("inventory_name") +
-						"</body>" +
-						"</html>");
+				imageIcon = new ImageIcon("image/store/" + rs.getString("inventory_name") + ".png");
+				inventoryBtn = new JButton(imageIcon);
+				inventoryBtn.setPreferredSize(new Dimension(130, 130));
 				inventoryBtn.addActionListener(new InventoryListener());
-				inventory.put(inventoryBtn, rs.getString("inventory_name"));
+				inventoryList.put(inventoryBtn, rs.getString("inventory_name"));
 				inventoryPanel.add(inventoryBtn);
-				
-				System.out.println(
-						rs.getInt("inventory_id") + "|"
-						+ rs.getString("inventory_name")	+ "|"
-						+ rs.getString("inventory_unit")+ "|"
-						+ format.parse(rs.getString("inventory_regdate"),
-								new ParsePosition(0))
-						);
 			}
 			inventoryPanel.updateUI();
 		} catch (SQLException e) {
@@ -347,11 +341,6 @@ class StorePanel extends JPanel{
 	
 	private void changeMode(int newMode) { changeMode(newMode, true); }
 	private void changeMode(int newMode, boolean actionate) {
-		if (newMode == INVEN_MODE)
-			inventoryPanel.setLayout(new GridLayout(inventory.size() / 6 + 1, 6));
-		else
-			inventoryPanel.setLayout(new GridLayout(inventory.size() / 2 + 1, 2));
-		
 		if (actionate) {
 			if (newMode == INVEN_MODE) invenAction.run();
 			else if (newMode == GRAPH_MODE) graphAction.run();

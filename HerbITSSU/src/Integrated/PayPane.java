@@ -2,26 +2,24 @@ package Integrated;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 
-import AnimationComponent.AniButton;
 import Database.CustomerOrder;
-import Database.DBGenerator;
 
 public class PayPane extends JPanel{
 	
@@ -49,7 +47,7 @@ public class PayPane extends JPanel{
 	private JButton cardBtn;
 	private JButton cashBtn;
 	private JButton backBtn;
-	private AniButton cancelBtn;
+	private JButton cancelBtn;
 	
 	
 	public PayPane(String text, OrderPanel orderPanel){
@@ -62,15 +60,20 @@ public class PayPane extends JPanel{
 		label.setHorizontalAlignment(SwingConstants.CENTER);
 		//this.db = this.parent.os.db;
 		
-		blackline = BorderFactory.createLineBorder(Color.black,5);
-		this.setBorder(blackline);
+		//blackline = BorderFactory.createLineBorder(Color.black,5);
+		//this.setBorder(blackline);
 		
 		this.centerPanel = new JPanel(new GridLayout(4,1,10,10));
 		this.bottomPanel = new JPanel(new GridLayout(1,4,10,10));
 		
-		this.cardBtn = new JButton("카드결제");
-		this.cashBtn = new JButton("현금결제");
-		this.backBtn = new JButton("결제취소");
+		this.cardBtn = new JButton(new ImageIcon("image/order/카드결제.png"));
+		this.cashBtn = new JButton(new ImageIcon("image/order/현금결제.png"));
+		this.backBtn = new JButton(new ImageIcon("image/order/결제취소.png"));
+		this.cancelBtn = new JButton(new ImageIcon("image/order/뒤로가기.png"));
+		cardBtn.setPreferredSize(new Dimension(136, 99));
+		cashBtn.setPreferredSize(new Dimension(136, 99));
+		backBtn.setPreferredSize(new Dimension(136, 99));
+		cancelBtn.setPreferredSize(new Dimension(136, 99));
 		this.total =  0;
 			
 		updatePanel();
@@ -98,7 +101,7 @@ public class PayPane extends JPanel{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				parent.resetTotal();
-				cancelBtn.getAniAction().run();
+				cancelBtn.doClick();
 			}
 		});
 		/*
@@ -123,11 +126,12 @@ public class PayPane extends JPanel{
 					//		+ " : " + MenuList.herbMenuInt.get(orderList.get(i).getMenuName()));
 					//System.out.println("Order Count : " + orderList.get(i).getMenuCount());
 					parent.os.db.exec("INSERT INTO herb_order ("
-							+ "order_id, order_menu_id, order_count,  order_cash)"
-							+ " VALUES(" + parent.latestOrderID + ", " 
+							+ "order_id, order_menu_id, order_count,  order_cash, order_date) VALUES( "
+							+ parent.latestOrderID + ", " // order_id
 							+ MenuList.herbMenuInt.get(orderList.get(i).getMenuName()).intValue() + ", "
-							+ orderList.get(i).getMenuCount() +", "
-							+ 1 + ");");
+							+ orderList.get(i).getMenuCount() +", " // order_count
+							+ "1, "
+							+ "now());"); // order_date 
 				}
 			}
 		}); 
@@ -153,11 +157,12 @@ public class PayPane extends JPanel{
 					//		+ " : " + MenuList.herbMenuInt.get(orderList.get(i).getMenuName()));
 					//System.out.println("Order Count : " + orderList.get(i).getMenuCount());
 					parent.os.db.exec("INSERT INTO herb_order ("
-							+ "order_id, order_menu_id, order_count,  order_cash)"
-							+ " VALUES(" + parent.latestOrderID + ", " 
+							+ "order_id, order_menu_id, order_count,  order_cash, order_date) VALUES( "
+							+ parent.latestOrderID + ", " // order_id
 							+ MenuList.herbMenuInt.get(orderList.get(i).getMenuName()).intValue() + ", "
-							+ orderList.get(i).getMenuCount() +", "
-							+ 0 + ");");
+							+ orderList.get(i).getMenuCount() +", " //order_count
+							+ "0, " //order_cash
+							+ "now());"); //order_date
 				}
 			}
 		});
@@ -199,8 +204,8 @@ public class PayPane extends JPanel{
 		this.centerPanel.add(ruleLabel);
 	}
 	
-	public void addCancelButton(AniButton cancelBtn){
-		this.cancelBtn = cancelBtn;
+	public void setPayBackAction(ActionListener payBackActionListener){
+		this.cancelBtn.addActionListener(payBackActionListener);
 		addBottomBtns();
 		this.bottomPanel.add(cancelBtn);
 	}

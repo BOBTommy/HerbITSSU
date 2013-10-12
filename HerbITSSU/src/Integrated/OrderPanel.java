@@ -1,14 +1,15 @@
 package Integrated;
 
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -16,7 +17,6 @@ import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
-import AnimationComponent.AniButton;
 import Database.CustomerOrder;
 import aurelienribon.slidinglayout.SLAnimator;
 import aurelienribon.slidinglayout.SLConfig;
@@ -25,74 +25,185 @@ import aurelienribon.slidinglayout.SLPanel;
 import aurelienribon.slidinglayout.SLSide;
 
 class OrderPanel extends JPanel {
+	OrderSystem os;
 	
-	private String modyName;
-	private int flag=0;
+	private HashMap<JButton, String> categoryList = new HashMap<JButton, String>();
+	private HashMap<JButton, String> menuList = new HashMap<JButton, String>();
+	
+	private final JSplitPane masterPanel = new JSplitPane();
+	private final SLPanel basePanel = new SLPanel();
+	private SLConfig payCfg, orderListCfg;
+	
+	//Menu Panels
+	private JPanel categoryPanel = new JPanel(), menuPanel = new JPanel();
+	private JScrollPane categoryScroll = new JScrollPane(categoryPanel,
+															JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+															JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+	private JScrollPane menuScroll = new JScrollPane(menuPanel,
+															JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+															JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+	
+	//OrderListPanel
+	private DefaultTableModel orderListTableModel = new DefaultTableModel();
+	private JTable orderListTable = new JTable(orderListTableModel);
+	private JScrollPane orderListTableScroll = new JScrollPane(orderListTable);
+	int currentNumber = 0; // 주문중인 메뉴 수
 	private int orderTotal; //주문 총 합계
+	final int maximumNumber = 60; // 한 번에 총 주문가능한 메뉴 수
+	private String columnNames[] = { "메뉴명", "수량", "단가", "메뉴별 합계" };
+	/* data[][0]: 메뉴명, data[][1]: 주문수량, data[][2]: 단가, data[][3]: 메뉴주문수량별합계 */
 	private ArrayList<CustomerOrder> orderList = new ArrayList<CustomerOrder>();
 	public int latestOrderID;
 	
-	public String returnName()
-	{
-		return modyName;
-	}
-	class menuListener implements ActionListener {
+	//Pay Panel
+	private PayPane payPane = new PayPane("결제창 샘플", this);
+	private JButton payButton = new JButton("결제하기");
+	
+	//Mody Use Variable
+	private String modyName;
+	private boolean modyMode = false;
+	
+	
 
+	public OrderPanel(OrderSystem os, boolean modyMode) {//mody event용
+		this(os);
+		this.modyMode = modyMode;
+	}
+
+	public OrderPanel(OrderSystem os) {
+		this.os = os;
+		this.orderTotal = 0;
+		this.latestOrderID = 0; //가장 최근 거래 번호를 초기화
+
+		//Menu Panels
+		categoryScroll.setBorder(null);
+		categoryPanel.setLayout(new ModifiedFlowLayout());
+		menuScroll.setBorder(null);
+		menuPanel.setLayout(new ModifiedFlowLayout());
+		try { //Loading Categories
+			java.sql.ResultSet rs = os.db
+					.exec("select distinct menu_category from herb_menu order by menu_category");
+			
+			categoryPanel.removeAll();
+			categoryList.clear();
+			ImageIcon imageIcon;
+			JButton categoryBtn;
+			while (rs.next()) {
+				imageIcon = new ImageIcon("image/order/" + rs.getString("menu_category").replace("/", "") + ".png");
+				categoryBtn = new JButton(imageIcon);
+				categoryBtn.setPreferredSize(new Dimension(imageIcon.getIconWidth(), imageIcon.getIconHeight()));
+				categoryBtn.addActionListener(new categoryListener());
+				categoryList.put(categoryBtn, rs.getString("menu_category"));
+				categoryPanel.add(categoryBtn);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		payButton.setPreferredSize(new Dimension(325, 80));
+		payButton.addActionListener(new ActionRunner(payAction));
+		
+		//OrderListPanel
+		orderListTableScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		orderListTableScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		updateOrderTable();
+				
+		//PayPanel
+		payPane.setPayBackAction(new ActionRunner(orderListAction));
+		
+		//Sliding Configs
+		payCfg = new SLConfig(basePanel).gap(0, 0).row(1f).col(1f).col(582)
+				.place(0, 0, orderListTableScroll).place(0, 1, payPane);
+		orderListCfg = new SLConfig(basePanel).gap(0, 0).row(1f).col(1f).col(2f)
+				.place(0, 0, menuScroll).place(0, 1, orderListTableScroll);
+
+		//basePanel
+		basePanel.setTweenManager(SLAnimator.createTweenManager());
+		basePanel.initialize(orderListCfg);
+		
+		//masterPanel
+		masterPanel.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
+		masterPanel.setDividerSize(1);
+		masterPanel.setDividerLocation(140);
+		masterPanel.setLeftComponent(categoryScroll);
+		masterPanel.setRightComponent(basePanel);
+		
+		this.setLayout(new BorderLayout());
+		this.add(masterPanel, BorderLayout.CENTER);
+	}
+
+	private final Runnable payAction = new Runnable() {
 		@Override
+		public void run() {
+			payPane.setTotal(orderTotal);
+			//추천 메뉴 스트링 촏기화
+			PythonSyncModule.recommandString = "추천 메뉴를 등록하기에는 누적된 주문량이 부족합니다.";
+			payPane.getRecommand(orderList);
+			basePanel
+					.createTransition()
+					.push(new SLKeyframe(payCfg, 0.6f)
+							.setEndSide(SLSide.LEFT, menuScroll)
+							.setStartSide(SLSide.RIGHT, payPane)
+							.setCallback(new SLKeyframe.Callback() {
+								@Override
+								public void done() {
+								}
+							})).play();
+		}
+	};
+
+	private final Runnable orderListAction = new Runnable() {
+		@Override
+		public void run() {
+			basePanel
+					.createTransition()
+					.push(new SLKeyframe(orderListCfg, 0.6f)
+							.setStartSide(SLSide.LEFT, menuScroll)
+							.setEndSide(SLSide.RIGHT, payPane)
+							.setCallback(new SLKeyframe.Callback() {
+								@Override
+								public void done() {
+								}
+							})).play();
+		}
+	};
+	
+	private class ActionRunner implements ActionListener {
+		Runnable action;
+		ActionRunner(Runnable action) { this.action = action; }
+		public void actionPerformed(ActionEvent e) {
+			if (action != null) action.run();
+		}
+	}
+	
+	private class categoryListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			JButton tmp1 = (JButton) e.getSource();
-			String name = tmp1.getText();
-			modyName=name;
-			String price = "0";
-			int numberOfItem = 0, sumOfEachItemPrice = 0; // 단가, 메뉴별 합계
-
+			String name = categoryList.get(tmp1);
+			loadMenu(name);
+		}
+	}
+	
+	private class menuListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			JButton tmp1 = (JButton) e.getSource();
+			String name = menuList.get(tmp1);
+			if (modyMode) { modyName=name; return; } //In case of ModyMode
+			
+			int price = 0;
 			try {
 				java.sql.ResultSet rs = os.db
 						.exec("select * from herb_menu where menu_name = '"
 								+ name + "'");
-				int cnt = 0;
-				while (rs.next()) {
-					price = rs.getString("menu_price");
+				if (rs.next()) {
+					price = Integer.parseInt(rs.getString("menu_price"));
 				}
 			} catch (SQLException sqle) {
-				// TODO Auto-generated catch block
 				sqle.printStackTrace();
 			}
-
-			/* 반복하며 수량과 메뉴별 합계를 받아온다. */
-			boolean sameMenuPickFlag = false;
-			int pos = currentNumber;
-			for (int tmp = 0; tmp < currentNumber; tmp++) {
-				if (name.compareTo(data[tmp][0]) == 0) {
-					numberOfItem = Integer.valueOf(data[tmp][1]).intValue() + 1;
-					sumOfEachItemPrice = Integer.valueOf(data[tmp][3])
-							.intValue() + Integer.valueOf(price).intValue();
-					pos = tmp;
-					sameMenuPickFlag = true;
-				}
-			}
-			if (sameMenuPickFlag == false) {
-				numberOfItem = 1;
-				sumOfEachItemPrice = Integer.valueOf(price).intValue();
-				currentNumber++;
-			}
-			/* 받아오기 끝 */
-			/* 테이블에 배정 */
-			/*
-			 * data[][0]: 메뉴명, data[][1]: 주문수량, data[][2]: 단가, data[][3]:
-			 * 메뉴주문수량별합계
-			 */
-			data[pos][0] = name;
-			data[pos][1] = Integer.toString(numberOfItem);
-			data[pos][2] = price;
-			data[pos][3] = Integer.toString(sumOfEachItemPrice);
-			if(flag==0)
-				orderListTableModel.setDataVector(data, columnNames);
 			
 			boolean isExist = false;
-			
 			for(int i=0; i< orderList.size(); i++){
-				if(orderList.get(i).getMenuName().compareTo(data[pos][0]) == 0)
+				if(orderList.get(i).getMenuName().compareTo(name) == 0)
 				{
 					orderList.get(i).addMenuCount();
 					isExist = true;
@@ -100,75 +211,38 @@ class OrderPanel extends JPanel {
 			}
 			
 			if( !isExist ){
-				orderList.add(new CustomerOrder(data[pos][0], 1));
+				orderList.add(new CustomerOrder(name, 1, price));
 			}
 			
-			orderTotal += Integer.parseInt(price);	//총 주문 합계에 현재 주문된 값을 더한다.
-
+			orderTotal += price;	//총 주문 합계에 현재 주문된 값을 더한다.
+			updateOrderTable();
 		}
 	}
-
-	class categoryListener implements ActionListener {
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			JButton tmp1 = (JButton) e.getSource();
-			String name = tmp1.getText();
-
-			loadMenu(name);
-		}
-	}
-
-	OrderSystem os;
-
-	private AniButton payButton = new AniButton("결제하기");
-	private AniButton cancel = new AniButton("뒤로가기");
-	private final SLPanel basePanel = new SLPanel();
-	private SLConfig payCfg, payBackCfg;
-	private PayPane payPane = new PayPane("결제창 샘플", this);
-
-	private JTable orderListTable;
-	private DefaultTableModel orderListTableModel;
-	private JScrollPane orderListTableScroll;
-	private String data[][] = new String[30][4]; // 주문한 목록의 데이터셋, 30줄 4열
-	int currentNumber = 0; // 주문중인 메뉴 수
-	final int maximumNumber = 60; // 한 번에 총 주문가능한 메뉴 수
-
-	private JScrollPane menuListScroll;
-	private ArrayList<JButton> categoryBtn = new ArrayList<JButton>();
-	private ArrayList<JButton> menuBtn = new ArrayList<JButton>();
-	JButton cash, card;
-	private String columnNames[] = { "메뉴명", "수량", "단가", "메뉴별 합계" };
-	/* data[][0]: 메뉴명, data[][1]: 주문수량, data[][2]: 단가, data[][3]: 메뉴주문수량별합계 */
-	private JPanel categoryPanel, menuPanel; // PIXEL 설정
-	private JPanel cardCash; // 버튼두개의 패널
-	private JPanel pane;
 	
-	
-
 	public void loadMenu(String category) {
 		try {
-			System.out.println("Load Menu: " + category);
-			JButton tmpBtn;
-
 			java.sql.ResultSet rs = os.db
-					.exec("select * from herb_menu where menu_category = '"
-							+ category + "'");
-
-			menuPanel.setLayout(new GridLayout(rs.getFetchSize(), 2));
+					.exec("select * from herb_menu where menu_category = '"	+ category + "'");
+			
 			menuPanel.removeAll();
-			menuBtn.clear();
+			menuList.clear();
+			if (!modyMode) menuPanel.add(payButton); //In case of Menu Modification Mode
+			//ImageIcon imageIcon;
+			JButton menuBtn;
 			while (rs.next()) {
-				tmpBtn = new JButton(rs.getString("menu_name"));
-				tmpBtn.addActionListener(new menuListener());
-				menuBtn.add(tmpBtn);
-				menuPanel.add(tmpBtn);
+				//imageIcon = new ImageIcon("image/order/" + rs.getString("menu_name") + ".png");
+				menuBtn = new JButton(rs.getString("menu_name"));
+				menuBtn.setPreferredSize(new Dimension(160, 80));
+				menuBtn.addActionListener(new menuListener());
+				menuList.put(menuBtn, rs.getString("menu_name"));
+				menuPanel.add(menuBtn);
 			}
-			menuPanel.add(payButton);
 			menuPanel.updateUI();
 			
-			ResultSet menuListQuery = os.db.exec("SELECT * FROM herb_menu");
 			
+			
+			//Menu Recommend Works...? I don't know what it is doing
+			ResultSet menuListQuery = os.db.exec("SELECT * FROM herb_menu");
 			try{//herb_menu table 에서 메뉴 내용을 얻어옴
 				while(menuListQuery.next()){
 					MenuList.herbMenuInt.put(menuListQuery.getString(2), //menu_name
@@ -184,225 +258,43 @@ class OrderPanel extends JPanel {
 			}catch(SQLException ex){
 				ex.printStackTrace();
 			}
+			//End of Menu Recommend
 			
 		} catch (SQLException e) {
 
 		}
 	}
 
-	public OrderPanel(OrderSystem os, int i) {//mody event용 
-		this.os = os;
-		flag=i;
-		categoryPanel = new JPanel();
-		menuPanel = new JPanel();
-		cardCash = new JPanel();
-		pane = new JPanel();
-		this.orderTotal = 0; //주문 총 합계
-
-		this.setLayout(new BorderLayout());
-		pane.setLayout(new BorderLayout());
-
-		JSplitPane splitPane = new JSplitPane(currentNumber, categoryPanel,
-				basePanel);
-		splitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
-		splitPane.setDividerSize(1);
-		splitPane.setDividerLocation(100);
-		splitPane.setLeftComponent(categoryPanel);
-		splitPane.setRightComponent(basePanel);
-
-		this.add(splitPane, BorderLayout.CENTER);
-
-		orderListTableScroll = new JScrollPane(orderListTable);
-		orderListTableScroll
-				.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-		orderListTableScroll
-				.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-
-		/* 픽셀작업 필요한부분 시작 PIXEL */
-		menuPanel.setLayout(new ModifiedFlowLayout());
-		cardCash.setLayout(new FlowLayout());
-		/* 픽셀작업 필요한부분 끝 PIXEL */
-		
-		menuListScroll = new JScrollPane(menuPanel);
-		menuListScroll
-				.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-		menuListScroll
-				.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-
-		try {
-			java.sql.ResultSet rs = os.db
-					.exec("select distinct menu_category from herb_menu");
-
-			JButton tmpBtn;
-			categoryPanel.setLayout(new GridLayout(rs.getFetchSize(), 1));
-			categoryBtn.clear();
-			while (rs.next()) {
-				tmpBtn = new JButton(rs.getString("menu_category"));
-				tmpBtn.addActionListener(new categoryListener());
-				categoryBtn.add(tmpBtn);
-				categoryPanel.add(tmpBtn);
-			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+	private void updateOrderTable() {
+		String data[][] = new String[orderList.size()][4];
+		for (int i = 0; i < orderList.size(); i++) {
+			data[i][0] = orderList.get(i).getMenuName();
+			data[i][1] = Integer.toString(orderList.get(i).getMenuCount());
+			data[i][2] = Integer.toString(orderList.get(i).getMenuPrice());
+			data[i][3] = Integer.toString(orderList.get(i).getTotalPrice());
 		}
-
 		
-		payCfg = new SLConfig(basePanel).gap(10, 10).row(1f).col(2f).col(1f)
-				.place(0, 0, orderListTableScroll);
-
-		payBackCfg = new SLConfig(basePanel).gap(10, 10).row(1f).col(1f).place(0, 0, menuListScroll);
-
-		basePanel.setTweenManager(SLAnimator.createTweenManager());
-		basePanel.initialize(payBackCfg);
-
-	}
-
-	public OrderPanel(OrderSystem os) {
-		this.os = os;
-		this.latestOrderID = 0; //가장 최근 거래 번호를 초기화
-
-		categoryPanel = new JPanel();
-		menuPanel = new JPanel();
-		cardCash = new JPanel();
-		pane = new JPanel();
-
-		this.setLayout(new BorderLayout());
-		pane.setLayout(new BorderLayout());
-		// pane.add(basePanel, BorderLayout.CENTER);
-		// pane.add(cardCash, BorderLayout.SOUTH);
-
-		JSplitPane splitPane = new JSplitPane(currentNumber, categoryPanel,
-				basePanel);
-		splitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
-		splitPane.setDividerSize(1);
-		splitPane.setDividerLocation(100);
-		splitPane.setLeftComponent(categoryPanel);
-		splitPane.setRightComponent(basePanel);
-
-		this.add(splitPane, BorderLayout.CENTER);
-
-		/* 테이블 레이아웃 세팅 시작 */
-		orderListTable = new JTable();
-		orderListTableModel = new DefaultTableModel(data, columnNames);
-		orderListTable.setModel(orderListTableModel);
-
-		orderListTableScroll = new JScrollPane(orderListTable);
-		orderListTableScroll
-				.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-		orderListTableScroll
-				.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-
-		/* 픽셀작업 필요한부분 시작 PIXEL */
-		menuPanel.setLayout(new ModifiedFlowLayout());
-		cardCash.setLayout(new FlowLayout());
-		/* 픽셀작업 필요한부분 끝 PIXEL */
-
-		menuListScroll = new JScrollPane(menuPanel);
-		menuListScroll
-				.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-		menuListScroll
-				.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-
-		try {
-			java.sql.ResultSet rs = os.db
-					.exec("select distinct menu_category from herb_menu");
-
-			JButton tmpBtn;
-			categoryPanel.setLayout(new GridLayout(rs.getFetchSize(), 1));
-			categoryBtn.clear();
-			while (rs.next()) {
-				tmpBtn = new JButton(rs.getString("menu_category"));
-				tmpBtn.addActionListener(new categoryListener());
-				categoryBtn.add(tmpBtn);
-				categoryPanel.add(tmpBtn);
-			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		payButton.setAction(payAction);
-		// cardCash.add(payButton);
-
-		cancel.setAction(payBackAction);
-		// cardCash.add(cancel);
-		payPane.addCancelButton(cancel);
-
 		orderListTableModel.setDataVector(data, columnNames);
-
-		payCfg = new SLConfig(basePanel).gap(10, 10).row(1f).col(2f).col(1f)
-				.place(0, 0, orderListTableScroll).place(0, 1, payPane);
-
-		payBackCfg = new SLConfig(basePanel).gap(10, 10).row(1f).col(1f)
-				.col(2f).place(0, 0, menuListScroll)
-				.place(0, 1, orderListTableScroll);
-
-		basePanel.setTweenManager(SLAnimator.createTweenManager());
-		basePanel.initialize(payBackCfg);
-
-	}
-
-	public void dataUpdate() { // 수정시 변경되어야할 부분
-
-	}
-
-	private final Runnable payAction = new Runnable() {
-		@Override
-		public void run() {
-			payPane.setTotal(orderTotal);
-			//추천 메뉴 스트링 촏기화
-			PythonSyncModule.recommandString = "추천 메뉴를 등록하기에는 누적된 주문량이 부족합니다.";
-			payPane.getRecommand(orderList);
-			basePanel
-					.createTransition()
-					.push(new SLKeyframe(payCfg, 0.6f)
-							.setEndSide(SLSide.LEFT, menuListScroll)
-							.setStartSide(SLSide.RIGHT, payPane)
-							.setCallback(new SLKeyframe.Callback() {
-								@Override
-								public void done() {
-								}
-							})).play();
-		}
-	};
-
-	private final Runnable payBackAction = new Runnable() {
-		@Override
-		public void run() {
-			basePanel
-					.createTransition()
-					.push(new SLKeyframe(payBackCfg, 0.6f)
-							.setStartSide(SLSide.LEFT, menuListScroll)
-							.setEndSide(SLSide.RIGHT, payPane)
-							.setCallback(new SLKeyframe.Callback() {
-								@Override
-								public void done() {
-								}
-							})).play();
-		}
-	};
-
-	public void payActionPush() {
-		this.payPane.setTotal(this.orderTotal);
-		this.payButton.getAniAction().run();
-	}
-
-	public void cancelPayAction() {
-		this.cancel.getAniAction().run();
-	}
-
-	public static class Accessor extends SLAnimator.ComponentAccessor {
-
 	}
 	
 	public void resetTotal(){	//주문취소(초기화시)
 		this.orderTotal = 0;
 		this.orderList.clear();
+		updateOrderTable();
 	}
 	
 	public ArrayList<CustomerOrder> getOrderList(){
 		return this.orderList;
 	}
 	
+	
+	// Mody Use Method
+	public String returnName()
+	{
+		return modyName;
+	}
+	
+	public void dataUpdate() { // 수정시 변경되어야할 부분
+
+	}
 }

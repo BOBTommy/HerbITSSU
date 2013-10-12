@@ -1,14 +1,15 @@
 package Integrated;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -37,7 +38,7 @@ public class AdminPanel extends JPanel {
 	private Font bigFont = new Font("굴림", Font.BOLD, 20);
 	public AdminPanel(final OrderSystem os) {
 		this.os = os;
-
+		
 		/* 테이블 레이아웃 세팅 시작 */
 		adminTable = new JTable();
 		adminTableModel = new DefaultTableModel(data, columnNames);
@@ -53,14 +54,14 @@ public class AdminPanel extends JPanel {
 
 		this.setLayout(new BorderLayout());
 
-		leftPanel = new JPanel(new ModifiedFlowLayout());
+		leftPanel = new JPanel(new BorderLayout());
 		leftScroll = new JScrollPane(leftPanel);
 		//leftScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		
 		this.add(leftScroll, BorderLayout.CENTER);
 
 		// leftPanel.setLayout( new BorderLayout() );
-		rightPanel = new JPanel(new GridLayout(10, 1, 25, 25));
+		rightPanel = new JPanel(new ModifiedFlowLayout());
 		rightScroll = new JScrollPane(rightPanel);
 		//rightScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		//rightScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
@@ -73,11 +74,11 @@ public class AdminPanel extends JPanel {
 		/* 그래프 설정 끝 */
 
 		/* 우측패널에 버튼 달기 */
-		pie = new JButton("파이그래프 보기");
-		pie.setFont(bigFont);
+		ImageIcon tmpIcon;
+		tmpIcon = new ImageIcon("image/admin/my_graph.png");
+		pie = new JButton(tmpIcon);
+		pie.setPreferredSize(new Dimension(tmpIcon.getIconWidth(), tmpIcon.getIconHeight()));
 		pie.addActionListener(new ActionListener() {
-
-			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				/* DB test, insert */
 				
@@ -100,8 +101,9 @@ public class AdminPanel extends JPanel {
 			}
 		});
 
-		bar = new JButton("막대그래프와 판매예측");
-		bar.setFont(bigFont);
+		tmpIcon = new ImageIcon("image/admin/bar_graph_expectation.png");
+		bar = new JButton(tmpIcon);
+		bar.setPreferredSize(new Dimension(tmpIcon.getIconWidth(), tmpIcon.getIconHeight()));
 		bar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				/* DB test */
@@ -148,9 +150,10 @@ public class AdminPanel extends JPanel {
 						"출력할 단위를 선택하세요.", leftPanel, os.db);
 			}
 		});
-
-		table = new JButton("판매현황표");
-		table.setFont(bigFont);
+		
+		tmpIcon = new ImageIcon("image/admin/sales_index.png");
+		table = new JButton(tmpIcon);
+		table.setPreferredSize(new Dimension(tmpIcon.getIconWidth(), tmpIcon.getIconHeight()));
 		table.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				/* Jython test */
@@ -166,8 +169,9 @@ public class AdminPanel extends JPanel {
 			}
 		});
 		
-		aprioriBtn = new JButton("메뉴 예측 실행");
-		aprioriBtn.setFont(bigFont);
+		tmpIcon = new ImageIcon("image/admin/apriori_sync.png");
+		aprioriBtn = new JButton(tmpIcon);
+		aprioriBtn.setPreferredSize(new Dimension(tmpIcon.getIconWidth(), tmpIcon.getIconHeight()));
 		aprioriBtn.addActionListener(new ActionListener() {
 			
 			@Override
@@ -178,16 +182,18 @@ public class AdminPanel extends JPanel {
 			}
 		});
 		// add menu
-		add = new JButton("품목 정보 추가");
-		add.setFont(bigFont);
+		tmpIcon = new ImageIcon("image/admin/item_info_add.png");
+		add = new JButton(tmpIcon);
+		add.setPreferredSize(new Dimension(tmpIcon.getIconWidth(), tmpIcon.getIconHeight()));
 		add.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				new AddEvent(os, leftPanel);
 			}
 		});
-		mody = new JButton("품목 정보 수정");
-		mody.setFont(bigFont);
+		tmpIcon = new ImageIcon("image/admin/item_info_modify.png");
+		mody = new JButton(tmpIcon);
+		mody.setPreferredSize(new Dimension(tmpIcon.getIconWidth(), tmpIcon.getIconHeight()));
 		mody.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
