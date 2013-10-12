@@ -1,5 +1,7 @@
 package Integrated;
 import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -8,6 +10,7 @@ import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -38,9 +41,12 @@ class StorePanel extends JPanel{
 	private int currentMode = INVEN_MODE; 
 	
 	private JPanel controlPanel = new JPanel();
-	private JButton controlInven = new JButton("<html><body style='height: 20px; vertical-align:middle; font-size: 12px'>목록 관리</body></html>");
-	private JButton controlRegis = new JButton("<html><body style='height: 20px; vertical-align:middle; font-size: 12px'>항목 추가</body></html>");
-	private JButton controlModif = new JButton("<html><body style='height: 20px; vertical-align:middle; font-size: 12px'>항목 수정</body></html>");
+	private ImageIcon controlInvenImg = new ImageIcon("image/store/list_mangement.png");
+	private ImageIcon controlRegisImg = new ImageIcon("image/store/list_add.png");
+	private ImageIcon controlModifImg = new ImageIcon("image/store/list_modify.png");
+	private JButton controlInven = new JButton(controlInvenImg);
+	private JButton controlRegis = new JButton(controlRegisImg);
+	private JButton controlModif = new JButton(controlModifImg);
 	
 	private JPanel inventoryPanel = new JPanel();
 	
@@ -55,12 +61,22 @@ class StorePanel extends JPanel{
 		this.os = os;
 		
 		//controlPanel
+		JPanel menuPanel = new JPanel();
+		menuPanel.setLayout(null);
+		menuPanel.setPreferredSize(new Dimension(488, 64));
+		controlInven.setBounds(0, 0,
+				controlInvenImg.getIconWidth(), controlInvenImg.getIconHeight());
+		controlRegis.setBounds(168, 0,
+				controlRegisImg.getIconWidth(), controlRegisImg.getIconHeight());
+		controlModif.setBounds(336, 0,
+				controlModifImg.getIconWidth(), controlModifImg.getIconHeight());
 		controlInven.addActionListener(new ControlListener());
 		controlRegis.addActionListener(new ControlListener());
 		controlModif.addActionListener(new ControlListener());
-		controlPanel.add(controlInven);
-		controlPanel.add(controlRegis);
-		controlPanel.add(controlModif);
+		menuPanel.add(controlInven);
+		menuPanel.add(controlRegis);
+		menuPanel.add(controlModif);
+		controlPanel.add(menuPanel);
 		
 		//inventoryPanel
 		//inventoryPanel.setBackground(Color.BLUE);
@@ -109,7 +125,7 @@ class StorePanel extends JPanel{
 		
 		masterPanel.setOrientation(JSplitPane.VERTICAL_SPLIT);
 		masterPanel.setDividerSize(1);
-		masterPanel.setDividerLocation(50);
+		masterPanel.setDividerLocation(75);
 		masterPanel.setLeftComponent(controlPanel);
 		masterPanel.setRightComponent(basePanel);
 		
