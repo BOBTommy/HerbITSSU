@@ -1,18 +1,16 @@
 package Integrated;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
-import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
+import java.util.Random;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -30,6 +28,10 @@ class StorePanel extends JPanel{
 	private static final int GRAPH_MODE = 1;
 	private static final int REGIS_MODE = 2;
 	private static final int MODIF_MODE = 3;
+	private static final int DAYS_OF_GRAPH = 7;
+	private static final int DAYS_OF_EXPECTATION = 3;
+	private static final String afterDateOf = "'2013-10-06'";
+	private static final String beforeDateOf = "'2013-10-08'";
 	
 	private OrderSystem os;
 	
@@ -53,11 +55,11 @@ class StorePanel extends JPanel{
 															JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 															JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 	
-	private StoreGraphPanel inventoryGraph = new StoreGraphPanel();
+	private GraphPane inventoryGraph = new GraphPane(DAYS_OF_EXPECTATION);
 	
 	private JPanel modificationPanel = new JPanel();
-	private JLabel modifIDLbl, modifNameLbl, modifUnitLbl, modifDateLbl;
-	private JTextField modifID, modifName, modifUnit, modifDate;
+	private JLabel modifIDLbl, modifNameLbl, modifUnitLbl, modifDateLbl, modifStockLbl;
+	private JTextField modifID, modifName, modifUnit, modifDate, modifStock;
 	private JButton modifOK, modifCancel;
 	
 	public StorePanel(OrderSystem os) {
@@ -85,7 +87,7 @@ class StorePanel extends JPanel{
 		inventoryScroll.setBorder(null);
 		inventoryPanel.setLayout(new ModifiedFlowLayout());
 		loadInventory();
-		changeMode(MODIF_MODE, false); ////////////////////////////////////////INVEN_MODE by Default
+		changeMode(INVEN_MODE, false);
 		
 		//modificationPanel
 		modifIDLbl = new JLabel("등록번호");
@@ -125,7 +127,7 @@ class StorePanel extends JPanel{
 		
 		//basePanel
 		basePanel.setTweenManager(SLAnimator.createTweenManager());
-		basePanel.initialize(modifCfg);
+		basePanel.initialize(invenCfg);
 		
 		masterPanel.setOrientation(JSplitPane.VERTICAL_SPLIT);
 		masterPanel.setDividerSize(1);
@@ -221,32 +223,62 @@ class StorePanel extends JPanel{
 				
 				try {
 					java.sql.ResultSet rs = os.db.exec(sql);
-					rs.next();
+					rs.next();					
 					
-					sql = "select * from herb_invenlog where "
-							+ "invenlog_inventory_id = '" + rs.getInt("inventory_id") + "' "
-							+ "ORDER BY invenlog_regdate DESC";
+					int inventory_id = rs.getInt("inventory_id");
+					sql = "SELECT * FROM (SELECT ("
+								+ "SELECT sum(invenlog_value) "
+								+ "FROM herb_invenlog b "
+								+ "WHERE b.invenlog_inventory_id = a.invenlog_inventory_id "
+								  + "and b.invenlog_regdate <= a.invenlog_regdate "
+								+ ") as invenlog_value, a.invenlog_day, a.invenlog_regdate "
+							+ "FROM herb_invenlog a "
+							+ "WHERE a.invenlog_inventory_id = " + inventory_id + " "
+							+ "and date(a.invenlog_regdate) >= " + afterDateOf + " "
+							+ "and date(a.invenlog_regdate) <= " + beforeDateOf + " "
+							+ "ORDER BY a.invenlog_regdate DESC "
+							+ "LIMIT 0, " + (DAYS_OF_GRAPH - DAYS_OF_EXPECTATION) + ") as alias_name ORDER BY alias_name.invenlog_regdate ASC";
 					rs = os.db.exec(sql);
 					
 					System.out.println(invenName + " -----------------------------");
-					int num = 10;
 					int cnt = 0;
-					int tmpPoints[] = new int[num];
-					String tmpLabels[] = new String[num];
-					while (rs.next() && (num-cnt > 0)) {
-						System.out.println(
-								rs.getInt("invenlog_id") + "|"
-								+ rs.getInt("invenlog_inventory_id")	+ "|"
-								+ rs.getInt("invenlog_value")+ "|"
-								+ DateUtil.convTimeValueToUserTypedString(DateUtil.convUserTypedStringToTimeValue(rs.getString("invenlog_regdate"), "yyyy-MM-dd kk:mm:ss"), "MM-dd")
-								);
-						
-						tmpLabels[cnt] = DateUtil.convTimeValueToUserTypedString(DateUtil.convUserTypedStringToTimeValue(rs.getString("invenlog_regdate"), "yyyy-MM-dd kk:mm:ss"), "MM-dd");
-						tmpPoints[cnt] = rs.getInt("invenlog_value");
+					long lastTimeValue = 0;
+					int lastDay = 0;
+					int lastValue = 0;
+					int tmpPoints[] = new int[DAYS_OF_GRAPH];
+					String tmpLabels[] = new String[DAYS_OF_GRAPH];
+					while (rs.next() && (DAYS_OF_GRAPH - DAYS_OF_EXPECTATION - cnt > 0)) {
+						lastTimeValue = DateUtil.convUserTypedStringToTimeValue(rs.getString("invenlog_regdate"), "yyyy-MM-dd kk:mm:ss");
+						lastDay = Integer.parseInt(rs.getString("invenlog_day"));
+						lastValue = rs.getInt("invenlog_value");
+						tmpLabels[cnt] = DateUtil.convTimeValueToUserTypedString(lastTimeValue, "MM-dd");
+						tmpPoints[cnt] = lastValue;
 						cnt++;
 					}
 					
-					inventoryGraph.setPoints(tmpPoints, tmpLabels);
+					//Average
+					int avg_value[] = new int[8];
+					rs = os.db.exec(sql);
+					rs.next();					
+					
+					sql = "SELECT cast(avg(invenlog_value) as signed) as invenlog_avgvalue, invenlog_day " 
+							+ "FROM herb_invenlog " 
+							+ "WHERE invenlog_inventory_id = " + inventory_id + " and invenlog_value < 0 " 
+							+ "GROUP BY invenlog_day "
+							+ "ORDER BY invenlog_day ASC ";
+					rs = os.db.exec(sql);
+					while (rs.next()) {
+						avg_value[rs.getInt("invenlog_day")] = rs.getInt("invenlog_avgvalue");
+					}
+					
+					for (int i = 1; i <= DAYS_OF_EXPECTATION; i++) {
+						lastTimeValue = lastTimeValue + 86400 * 1000;
+						lastValue = lastValue + avg_value[(lastDay - 1 + i) % 7 + 1];
+						tmpLabels[cnt + i - 1] = DateUtil.convTimeValueToUserTypedString(lastTimeValue, "MM-dd");
+						tmpPoints[cnt + i - 1] = lastValue;
+					}
+					
+					inventoryGraph.setPoints(tmpPoints, tmpLabels, invenName);
 				} catch (SQLException ex) {
 					ex.printStackTrace();
 				}
@@ -295,23 +327,43 @@ class StorePanel extends JPanel{
 	private void loadInventory() {
 		try {
 			/*
-			os.db.exec("DELETE FROM herb_invenslog;");
+			os.db.exec("DELETE FROM herb_invenlog;");
 			
 			// Test Data Injection
 			String sql;
-			for (int i = 1; i <= 140; i++) {
+			for (int i = 1; i <= 11; i++) {
 				sql = "insert herb_invenlog("
-						+ "invenlog_id, invenlog_inventory_id, invenlog_value, invenlog_regdate) "
+						+ "invenlog_id, invenlog_inventory_id, invenlog_value, invenlog_day, invenlog_regdate) "
 						+ "values("
 						+ "'" + Integer.toString(i) + "', " //inventory_id
-						+ "'" + Integer.toString(((i-1) % 20) + 1) + "', " //inventory_name
-						+ "'" + Integer.toString(new Random().nextInt(40)) + "', "
-						+ "date_add(now(), interval -" + Integer.toString(7-(i-1)/20) + " day))";
+						+ "'" + Integer.toString(i) + "', " //inventory_name
+						+ "'" + Integer.toString(new Random().nextInt(20) + 100) + "', "
+						+ "dayofweek(date_add(now(), interval -" + Integer.toString(7*8) + " day)), "
+						+ "date_add(now(), interval -" + Integer.toString(7*8) + " day))";
 				os.db.exec( //inventory_regdate
 						sql
 				);
 			}
+			
+			// Test Data Injection2
+			for (int i = 1; i <= 11; i++) {
+				for (int j = 1; j <= 20; j++) {
+				sql = "insert herb_invenlog("
+						+ "invenlog_id, invenlog_inventory_id, invenlog_value, invenlog_day, invenlog_regdate) "
+						+ "values("
+						+ "'" + Integer.toString(i+i*j) + "', " //inventory_id
+						+ "'" + Integer.toString(i) + "', " //inventory_name
+						+ "'" + Integer.toString(-1 * new Random().nextInt(10)) + "', "
+						+ "dayofweek(date_add(now(), interval -" + Integer.toString(j) + " day)), "
+						+ "date_add(now(), interval -" + Integer.toString(j) + " day))";
+				os.db.exec( //inventory_regdate
+						sql
+				);
+				}
+			}
 			*/
+			
+			
 			
 			String DATE_FORMAT = "yyyy-MM-dd kk:mm:ss";
 			SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT);
