@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Random;
 
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -30,8 +31,8 @@ class StorePanel extends JPanel{
 	private static final int MODIF_MODE = 3;
 	private static final int DAYS_OF_GRAPH = 7;
 	private static final int DAYS_OF_EXPECTATION = 3;
-	private static final String afterDateOf = "'2013-10-06'";
-	private static final String beforeDateOf = "'2013-10-08'";
+	private static final String afterDateOf = "'0'";
+	private static final String beforeDateOf = "'now()'";
 	
 	private OrderSystem os;
 	
@@ -61,6 +62,7 @@ class StorePanel extends JPanel{
 	private JLabel modifIDLbl, modifNameLbl, modifUnitLbl, modifDateLbl, modifStockLbl;
 	private JTextField modifID, modifName, modifUnit, modifDate, modifStock;
 	private JButton modifOK, modifCancel;
+	private int modifOriStock;
 	
 	public StorePanel(OrderSystem os) {
 		this.os = os;
@@ -90,14 +92,17 @@ class StorePanel extends JPanel{
 		changeMode(INVEN_MODE, false);
 		
 		//modificationPanel
+		modificationPanel.setLayout(new BoxLayout(modificationPanel, BoxLayout.Y_AXIS));
 		modifIDLbl = new JLabel("등록번호");
 		modifNameLbl = new JLabel("이름");
 		modifUnitLbl = new JLabel("단위");
 		modifDateLbl = new JLabel("최종수정일");
+		modifStockLbl = new JLabel("재고");
 		modifID = new JTextField(5);
 		modifName = new JTextField(10);
 		modifUnit = new JTextField(10);
 		modifDate = new JTextField(16);
+		modifStock = new JTextField(10);
 		modifOK = new JButton("수정하기");
 		modifCancel = new JButton("취소");
 		modifID.setEditable(false);
@@ -112,6 +117,8 @@ class StorePanel extends JPanel{
 		modificationPanel.add(modifUnit);
 		modificationPanel.add(modifDateLbl);
 		modificationPanel.add(modifDate);
+		modificationPanel.add(modifStockLbl);
+		modificationPanel.add(modifStock);
 		modificationPanel.add(modifOK);
 		modificationPanel.add(modifCancel);
 		
@@ -295,6 +302,22 @@ class StorePanel extends JPanel{
 						modifName.setText(rs.getString("inventory_name"));
 						modifUnit.setText(rs.getString("inventory_unit"));
 						modifDate.setText(rs.getString("inventory_regdate"));
+					
+						String sql = "SELECT ("
+								+ "SELECT sum(invenlog_value) "
+								+ "FROM herb_invenlog b "
+								+ "WHERE b.invenlog_inventory_id = a.invenlog_inventory_id "
+								  + "and b.invenlog_regdate <= a.invenlog_regdate "
+								+ ") as invenlog_value, a.invenlog_day, a.invenlog_regdate "
+							+ "FROM herb_invenlog a "
+							+ "WHERE a.invenlog_inventory_id = " + rs.getString("inventory_id") + " "
+							+ "ORDER BY a.invenlog_regdate DESC "
+							+ "LIMIT 0, 1";
+						rs = os.db.exec(sql);
+						rs.next();
+						
+						modifOriStock = rs.getInt("invenlog_value");
+						modifStock.setText(rs.getString("invenlog_value"));
 					}
 				} catch (SQLException ex) {
 					ex.printStackTrace();
@@ -312,13 +335,24 @@ class StorePanel extends JPanel{
 						+ "inventory_unit='" + modifUnit.getText() + "', "
 						+ "inventory_regdate=now() "
 						+ "where inventory_id='" + modifID.getText() + "'");
+				
+				if (Integer.parseInt(modifStock.getText()) != modifOriStock) {
+					os.db.exec("insert herb_invenlog("
+							+ "invenlog_inventory_id, invenlog_value, invenlog_day, invenlog_regdate) "
+							+ "values("
+							+ "'" + modifID.getText() + "', " //inventory_name
+							+ "'" + (Integer.parseInt(modifStock.getText()) - modifOriStock) + "', "
+							+ "dayofweek(now()), "
+							+ "now())");
+				}
 				loadInventory();
-			} else if (src == modifCancel) {
-				modifID.setText("");
-				modifName.setText("");
-				modifUnit.setText("");
-				modifDate.setText("");
 			}
+			
+			modifID.setText("");
+			modifName.setText("");
+			modifUnit.setText("");
+			modifDate.setText("");
+			modifOriStock = 0;
 			
 			changeMode(INVEN_MODE);
 		}
@@ -333,9 +367,8 @@ class StorePanel extends JPanel{
 			String sql;
 			for (int i = 1; i <= 11; i++) {
 				sql = "insert herb_invenlog("
-						+ "invenlog_id, invenlog_inventory_id, invenlog_value, invenlog_day, invenlog_regdate) "
+						+ "invenlog_inventory_id, invenlog_value, invenlog_day, invenlog_regdate) "
 						+ "values("
-						+ "'" + Integer.toString(i) + "', " //inventory_id
 						+ "'" + Integer.toString(i) + "', " //inventory_name
 						+ "'" + Integer.toString(new Random().nextInt(20) + 100) + "', "
 						+ "dayofweek(date_add(now(), interval -" + Integer.toString(7*8) + " day)), "
@@ -349,9 +382,8 @@ class StorePanel extends JPanel{
 			for (int i = 1; i <= 11; i++) {
 				for (int j = 1; j <= 20; j++) {
 				sql = "insert herb_invenlog("
-						+ "invenlog_id, invenlog_inventory_id, invenlog_value, invenlog_day, invenlog_regdate) "
+						+ "invenlog_inventory_id, invenlog_value, invenlog_day, invenlog_regdate) "
 						+ "values("
-						+ "'" + Integer.toString(i+i*j) + "', " //inventory_id
 						+ "'" + Integer.toString(i) + "', " //inventory_name
 						+ "'" + Integer.toString(-1 * new Random().nextInt(10)) + "', "
 						+ "dayofweek(date_add(now(), interval -" + Integer.toString(j) + " day)), "
