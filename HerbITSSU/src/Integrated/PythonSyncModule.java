@@ -36,6 +36,7 @@ public class PythonSyncModule extends JFrame{
 	private ArrayList<Order> orderList;
 	
 	private String textStr;
+	private boolean flag;
 	
 	public PythonSyncModule(OrderSystem os) {
 		super("Apriori prediction 모듈 동기화 중입니다.");
@@ -57,15 +58,22 @@ public class PythonSyncModule extends JFrame{
 	
 	public void updateTextarea(){
 		this.getFromDB();
-		while(true){
-			if(new File("C:\\herb.dat").exists())
-				break;
+		
+		flag = false;
+		
+		flag = this.makeList();
+		if( flag ){
+			while(true){
+				if(new File("C:\\herb.dat").exists())
+					break;
+			}
+			JythonDriver driver = new JythonDriver("Apriori");
+			textStr += driver.getAprioriString();
 		}
-		JythonDriver driver = new JythonDriver("Apriori");
-		textStr += driver.getAprioriString();
 		textStr += "\n동기화가 완료되었습니다. 창을 닫아주세요.";
 		textArea.setText(textStr);
-		getData();
+		if(flag)
+			getData();
 	}
 	
 	public void getData(){
@@ -80,7 +88,7 @@ public class PythonSyncModule extends JFrame{
 				MenuList.addRecommandItem(item1, item2);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 	}
 	
@@ -129,10 +137,10 @@ public class PythonSyncModule extends JFrame{
 		}
 	}
 	
-	public void makeList(){
+	public boolean makeList(){
 		//거래량이 3000건 이하면 별로 가치가 없음
 		if(this.orderList.size() < 3000)
-			return;
+			return false;
 		try {
 			BufferedWriter writer = new BufferedWriter(new FileWriter(new  File("C:\\apriori.dat")));
 			for(int i=0; i<this.orderList.size(); i++){
@@ -147,6 +155,8 @@ public class PythonSyncModule extends JFrame{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		return true;
 	}
 	
 }
