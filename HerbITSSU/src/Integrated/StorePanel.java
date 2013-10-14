@@ -6,12 +6,12 @@ import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
-import java.util.Random;
 
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -330,28 +330,53 @@ class StorePanel extends JPanel{
 		public void actionPerformed(ActionEvent e) {
 			JButton src = (JButton) e.getSource();
 			if (src == modifOK) {
-				os.db.exec("update herb_inventory set "
-						+ "inventory_name='" + modifName.getText() + "', "
-						+ "inventory_unit='" + modifUnit.getText() + "', "
-						+ "inventory_regdate=now() "
-						+ "where inventory_id='" + modifID.getText() + "'");
-				
-				if (Integer.parseInt(modifStock.getText()) != modifOriStock) {
-					os.db.exec("insert herb_invenlog("
-							+ "invenlog_inventory_id, invenlog_value, invenlog_day, invenlog_regdate) "
-							+ "values("
-							+ "'" + modifID.getText() + "', " //inventory_name
-							+ "'" + (Integer.parseInt(modifStock.getText()) - modifOriStock) + "', "
-							+ "dayofweek(now()), "
-							+ "now())");
+				if (currentMode == REGIS_MODE) {
+					os.db.exec("insert herb_inventory "
+							+ "(inventory_name, inventory_unit, inventory_regdate) "
+							+ "VALUES ("
+								+ "'" + modifName.getText() + "', "
+								+ "'" + modifUnit.getText() + "', "
+								+ "now());");
+					try {
+						java.sql.ResultSet rs = os.db.exec("select inventory_id from herb_inventory where inventory_name='" + modifName.getText() + "';");
+						rs.next();
+						os.db.exec("insert herb_invenlog("
+								+ "invenlog_inventory_id, invenlog_value, invenlog_day, invenlog_regdate) "
+								+ "values("
+								+ "'" + rs.getString("inventory_id") + "', " //inventory_name
+								+ "'" + modifStock.getText() + "', "
+								+ "dayofweek(now()), "
+								+ "now())");
+					} catch (SQLException ex) {
+						ex.printStackTrace();
+					}
+				} else if (currentMode == MODIF_MODE) {
+					os.db.exec("update herb_inventory set "
+							+ "inventory_name='" + modifName.getText() + "', "
+							+ "inventory_unit='" + modifUnit.getText() + "', "
+							+ "inventory_regdate=now() "
+							+ "where inventory_id='" + modifID.getText() + "'");
+					
+					if (Integer.parseInt(modifStock.getText()) != modifOriStock) {
+						os.db.exec("insert herb_invenlog("
+								+ "invenlog_inventory_id, invenlog_value, invenlog_day, invenlog_regdate) "
+								+ "values("
+								+ "'" + modifID.getText() + "', " //inventory_name
+								+ "'" + (Integer.parseInt(modifStock.getText()) - modifOriStock) + "', "
+								+ "dayofweek(now()), "
+								+ "now())");
+					}
 				}
 				loadInventory();
+				changeMode(INVEN_MODE);
+				JOptionPane.showMessageDialog(null, "완료되었습니다!");
 			}
 			
 			modifID.setText("");
 			modifName.setText("");
 			modifUnit.setText("");
 			modifDate.setText("");
+			modifStock.setText("");
 			modifOriStock = 0;
 			
 			changeMode(INVEN_MODE);
@@ -360,38 +385,30 @@ class StorePanel extends JPanel{
 	
 	private void loadInventory() {
 		try {
-			/*
-			os.db.exec("DELETE FROM herb_invenlog;");
-			
-			// Test Data Injection
+			/*///////////// Fake Data
+			os.db.exec("DELETE FROM herb_order;");
+			System.out.println("Now Start");
 			String sql;
-			for (int i = 1; i <= 11; i++) {
-				sql = "insert herb_invenlog("
-						+ "invenlog_inventory_id, invenlog_value, invenlog_day, invenlog_regdate) "
-						+ "values("
-						+ "'" + Integer.toString(i) + "', " //inventory_name
-						+ "'" + Integer.toString(new Random().nextInt(20) + 100) + "', "
-						+ "dayofweek(date_add(now(), interval -" + Integer.toString(7*8) + " day)), "
-						+ "date_add(now(), interval -" + Integer.toString(7*8) + " day))";
-				os.db.exec( //inventory_regdate
-						sql
-				);
-			}
 			
-			// Test Data Injection2
-			for (int i = 1; i <= 11; i++) {
-				for (int j = 1; j <= 20; j++) {
-				sql = "insert herb_invenlog("
-						+ "invenlog_inventory_id, invenlog_value, invenlog_day, invenlog_regdate) "
-						+ "values("
-						+ "'" + Integer.toString(i) + "', " //inventory_name
-						+ "'" + Integer.toString(-1 * new Random().nextInt(10)) + "', "
-						+ "dayofweek(date_add(now(), interval -" + Integer.toString(j) + " day)), "
-						+ "date_add(now(), interval -" + Integer.toString(j) + " day))";
-				os.db.exec( //inventory_regdate
-						sql
-				);
+			int orderCntAday, orderMenus, accumulatedCnt = 1;
+			for (int i = 0; i < 1000; i++) {
+				orderCntAday = new Random().nextInt(5) + 5;
+				orderMenus = new Random().nextInt(5) + 1;
+				for (int j = 0; j < orderCntAday; j++) {
+					for (int k = 0; k < orderMenus; k++) {
+						sql = "INSERT INTO herb_order"
+								+ "(order_id, order_menu_id, order_count, order_date, order_cash) "
+								+ "VALUES("
+									+ "'" + accumulatedCnt + "', "
+									+ "'" + (new Random().nextInt(290) + 1) + "', "
+									+ "'" + (new Random().nextInt(5) + 1) + "', "
+									+ "date_add(now(), interval -" + (180 - i) + " day), "
+									+ "'" + new Random().nextInt(2) +"');";
+						os.db.exec(sql);
+					}
+					accumulatedCnt++;
 				}
+				System.out.println("Day " + (i+ 1) + "is Completed");
 			}
 			*/
 			
@@ -428,8 +445,27 @@ class StorePanel extends JPanel{
 		if (actionate) {
 			if (newMode == INVEN_MODE) invenAction.run();
 			else if (newMode == GRAPH_MODE) graphAction.run();
-			else if (newMode == REGIS_MODE) regisAction.run();
-			else if (newMode == MODIF_MODE) modifAction.run();
+			else if (newMode == REGIS_MODE) {
+				modifIDLbl.setVisible(false);
+				modifID.setVisible(false);
+				modifDateLbl.setVisible(false);
+				modifDate.setVisible(false);
+				modifOK.setText("등록하기");
+				modifID.setText("");
+				modifName.setText("");
+				modifUnit.setText("");
+				modifDate.setText("");
+				modifStock.setText("");
+				regisAction.run();
+			}
+			else if (newMode == MODIF_MODE) {
+				modifIDLbl.setVisible(true);
+				modifID.setVisible(true);
+				modifDateLbl.setVisible(true);
+				modifDate.setVisible(true);
+				modifOK.setText("수정하기");
+				modifAction.run();
+			}
 		}
 		
 		currentMode = newMode;

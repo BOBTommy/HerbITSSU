@@ -15,6 +15,7 @@ import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
@@ -132,6 +133,9 @@ public class PayPane extends JPanel{
 							+ orderList.get(i).getMenuCount() +", " // order_count
 							+ "1, "
 							+ "now());"); // order_date 
+					parent.resetTotal();
+					cancelBtn.doClick();
+					JOptionPane.showMessageDialog(null, "현금 결제 되었습니다!");
 				}
 			}
 		}); 
@@ -163,6 +167,9 @@ public class PayPane extends JPanel{
 							+ orderList.get(i).getMenuCount() +", " //order_count
 							+ "0, " //order_cash
 							+ "now());"); //order_date
+					parent.resetTotal();
+					cancelBtn.doClick();
+					JOptionPane.showMessageDialog(null, "카드 결제 되었습니다!");
 				}
 			}
 		});
