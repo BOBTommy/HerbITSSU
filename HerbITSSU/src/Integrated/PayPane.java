@@ -240,6 +240,9 @@ public class PayPane extends JPanel{
 	}
 	
 	public void getRecommand(ArrayList<CustomerOrder> orderList){
+		String recText = "추천 메뉴를 등록하기에는 누적된 주문량이 부족합니다.";
+		
+		
 		if(orderList.isEmpty()) //주문 내역이 없을때
 			return;
 		if(MenuList.herbRecMenuList.isEmpty())
@@ -247,7 +250,7 @@ public class PayPane extends JPanel{
 		//List가 비어있으면 따로 할일 없음
 		
 		//그렇지 않다면
-		String recText = "<html>";
+		recText = "<html>";
 		boolean flag = false; //추천할 아이템이 텍스트에 나타나야 하는지 체크
 		for(int i=0; i<orderList.size(); i++){
 			if(MenuList.herbRecMenuList.get(
@@ -261,6 +264,8 @@ public class PayPane extends JPanel{
 		recText += "</html>";
 		if(flag)//추천된 메뉴가 있는 경우
 			recommandLabel.setText(recText);
+		else
+			recommandLabel.setText("추천 메뉴를 등록하기에는 누적된 주문량이 부족합니다.");
 	}
 	
 	public void refreshDate(){
