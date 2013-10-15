@@ -86,13 +86,15 @@ public class AdminPanel extends JPanel {
 						+ " order_id," 
 						+ " order_menu_id,"
 						+ " order_count,"
-						+ " order_date"
+						+ " order_date,"
+						+ " order_cash"
 						+ ") "
 						+ "values("
 						+ " 2, "
 						+ " 1, "
 						+ " 1, "
-						+ " now()"
+						+ " \"2013-10-15 11:30:00\","
+						+ " 0"
 						+ ")");
 				
 				/* DB test */

@@ -354,6 +354,7 @@ public class HistogramChart {
 				long tomorrowDayTime = ((nowTime/(24000 *3600))*24000*3600) + 24000*3600;	//내일 자정의 milliseconds
 				System.out.println(tomorrowDayTime);
 				System.out.println("-------");
+				boolean gen = false;
 				while (i.hasNext()) {
 					
 					HerbOrderTable hot = (HerbOrderTable) i.next();
@@ -385,7 +386,7 @@ public class HistogramChart {
 
 					String DATE_FORMAT2 = "yyyy-MM-dd kk:mm:ss";
 					SimpleDateFormat format2 = new SimpleDateFormat(DATE_FORMAT2);
-
+					gen = false;
 					while (resultSet2.next()) {
 						HerbMenuTable hmt = new HerbMenuTable();
 						hmt.setMenu_id(resultSet2.getInt("menu_id"));
@@ -398,11 +399,12 @@ public class HistogramChart {
 								new ParsePosition(0)));
 
 						res2.add(hmt);
+						if (gen == false) gen = true;
 					}
 					if( resultSet != null )resultSet.close();
 					if( resultSet2 != null )resultSet2.close();
-
-					sumOfSales[timeIndex] += res2.get(0).getMenu_price()* hot.getOrder_count();
+					System.out.println(gen);
+					if (gen) sumOfSales[timeIndex] += res2.get(0).getMenu_price()* hot.getOrder_count();
 				}
 		
 				
@@ -608,7 +610,7 @@ public class HistogramChart {
 					sumOfSales[tmp] = 0;
 				}
 				int timeIndex = 0; //
-				
+				boolean gen = false;
 				long nowDay = now.getTime() / (3600 * 24000); // 1970~ 현재 일 수
 				while (i.hasNext()) {
 					HerbOrderTable hot = (HerbOrderTable) i.next();
@@ -632,7 +634,7 @@ public class HistogramChart {
 
 					String DATE_FORMAT2 = "yyyy-MM-dd kk:mm:ss";
 					SimpleDateFormat format2 = new SimpleDateFormat(DATE_FORMAT2);
-
+					gen = false;
 					while (resultSet2.next()) {
 						HerbMenuTable hmt = new HerbMenuTable();
 						hmt.setMenu_id(resultSet2.getInt("menu_id"));
@@ -645,11 +647,12 @@ public class HistogramChart {
 								new ParsePosition(0)));
 
 						res2.add(hmt);
+						if (gen == false)gen = true;
 					}
 					if( resultSet != null )resultSet.close();
 					if( resultSet2 != null )resultSet2.close();
 
-					sumOfSales[timeIndex] += res2.get(0).getMenu_price() * hot.getOrder_count();
+					if (gen == true) sumOfSales[timeIndex] += res2.get(0).getMenu_price() * hot.getOrder_count();
 				}
 
 				
@@ -862,6 +865,7 @@ public class HistogramChart {
 				}
 				int timeIndex = 0; //
 				//now = new Date();
+				boolean gen = false;
 				long nowDay = now.getTime() / (3600 * 24000); // 1970~ 현재 일 수
 				while (i.hasNext()) {
 					HerbOrderTable hot = (HerbOrderTable) i.next();
@@ -900,7 +904,7 @@ public class HistogramChart {
 
 					String DATE_FORMAT2 = "yyyy-MM-dd kk:mm:ss";
 					SimpleDateFormat format2 = new SimpleDateFormat(DATE_FORMAT2);
-
+					gen = false;
 					while (resultSet2.next()) {
 						HerbMenuTable hmt = new HerbMenuTable();
 						hmt.setMenu_id(resultSet2.getInt("menu_id"));
@@ -913,11 +917,11 @@ public class HistogramChart {
 								new ParsePosition(0)));
 
 						res2.add(hmt);
+						if (gen == false) gen = true;
 					}
 					if( resultSet != null )resultSet.close();
 					if( resultSet2 != null )resultSet2.close();
-
-					sumOfSales[timeIndex] += res2.get(0).getMenu_price() * hot.getOrder_count();
+					if (gen)sumOfSales[timeIndex] += res2.get(0).getMenu_price() * hot.getOrder_count();
 				}
 				
 				int tmp[] = new int[12];
@@ -1143,6 +1147,7 @@ public class HistogramChart {
 				}
 				int timeIndex = 0; //
 				// now = new Date();
+				boolean gen = false;
 				long nowDay = now.getTime() / (3600 * 24000); // 1970~ 현재 일 수
 				while (i.hasNext()) {
 					HerbOrderTable hot = (HerbOrderTable) i.next();
@@ -1175,7 +1180,7 @@ public class HistogramChart {
 
 					String DATE_FORMAT2 = "yyyy-MM-dd kk:mm:ss";
 					SimpleDateFormat format2 = new SimpleDateFormat(DATE_FORMAT2);
-
+					gen = false;
 					while (resultSet2.next()) {
 						HerbMenuTable hmt = new HerbMenuTable();
 						hmt.setMenu_id(resultSet2.getInt("menu_id"));
@@ -1188,11 +1193,12 @@ public class HistogramChart {
 								new ParsePosition(0)));
 
 						res2.add(hmt);
+						if (gen == false) gen = true;
 					}
 					if (resultSet != null) resultSet.close();
 					if (resultSet2 != null) resultSet2.close();
 
-					sumOfSales[timeIndex] += res2.get(0).getMenu_price() * hot.getOrder_count();
+					if (gen == true) sumOfSales[timeIndex] += res2.get(0).getMenu_price() * hot.getOrder_count();
 				}
 				
 				int tmp[] = new int[5];
