@@ -262,5 +262,12 @@ public class PayPane extends JPanel{
 		if(flag)//추천된 메뉴가 있는 경우
 			recommandLabel.setText(recText);
 	}
+	
+	public void refreshDate(){
+		Date dt = new Date();
+		SimpleDateFormat dtForm = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String curTime = dtForm.format(dt.getTime());
+		dateLabel.setText("결제 일시 : \t\t" + curTime);
+	}
 
 }

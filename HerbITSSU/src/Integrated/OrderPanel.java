@@ -135,6 +135,7 @@ class OrderPanel extends JPanel {
 		@Override
 		public void run() {
 			payPane.setTotal(orderTotal);
+			payPane.refreshDate();
 			//추천 메뉴 스트링 촏기화
 			PythonSyncModule.recommandString = "추천 메뉴를 등록하기에는 누적된 주문량이 부족합니다.";
 			payPane.getRecommand(orderList);
@@ -239,9 +240,6 @@ class OrderPanel extends JPanel {
 			}
 			menuPanel.updateUI();
 			
-			
-			
-			//Menu Recommend Works...? I don't know what it is doing
 			ResultSet menuListQuery = os.db.exec("SELECT * FROM herb_menu");
 			try{//herb_menu table 에서 메뉴 내용을 얻어옴
 				while(menuListQuery.next()){
