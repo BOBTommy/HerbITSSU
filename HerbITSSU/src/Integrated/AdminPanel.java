@@ -55,10 +55,10 @@ public class AdminPanel extends JPanel {
 		this.setLayout(new BorderLayout());
 
 		leftPanel = new JPanel(new BorderLayout());
-		leftScroll = new JScrollPane(leftPanel);
+		//leftScroll = new JScrollPane(leftPanel);
 		//leftScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		
-		this.add(leftScroll, BorderLayout.CENTER);
+		this.add(leftPanel, BorderLayout.CENTER);
 
 		// leftPanel.setLayout( new BorderLayout() );
 		rightPanel = new JPanel(new ModifiedFlowLayout());

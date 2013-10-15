@@ -63,18 +63,13 @@ class OrderPanel extends JPanel {
 	private String modyName;
 	private boolean modyMode = false;
 	
-	
 
-	public OrderPanel(OrderSystem os, boolean modyMode) {//mody event용
-		this(os);
-		this.modyMode = modyMode;
-	}
-
-	public OrderPanel(OrderSystem os) {
+	public OrderPanel(OrderSystem os,boolean modyMode) {
 		this.os = os;
 		this.orderTotal = 0;
 		this.latestOrderID = 0; //가장 최근 거래 번호를 초기화
-
+		this.modyMode = modyMode;
+		
 		//Menu Panels
 		categoryScroll.setBorder(null);
 		categoryPanel.setLayout(new ModifiedFlowLayout());
@@ -111,11 +106,21 @@ class OrderPanel extends JPanel {
 		payPane.setPayBackAction(new ActionRunner(orderListAction));
 		
 		//Sliding Configs
-		payCfg = new SLConfig(basePanel).gap(0, 0).row(1f).col(1f).col(582)
-				.place(0, 0, orderListTableScroll).place(0, 1, payPane);
-		orderListCfg = new SLConfig(basePanel).gap(0, 0).row(1f).col(1f).col(2f)
-				.place(0, 0, menuScroll).place(0, 1, orderListTableScroll);
-
+		
+		if(modyMode)
+		{
+			payCfg = new SLConfig(basePanel).gap(0, 0).row(1f).col(1f)
+					.place(0, 0, orderListTableScroll);
+			orderListCfg = new SLConfig(basePanel).gap(0, 0).row(1f).col(1f)
+					.place(0, 0, menuScroll);
+		}
+		else
+		{
+			payCfg = new SLConfig(basePanel).gap(0, 0).row(1f).col(1f).col(582)
+					.place(0, 0, orderListTableScroll).place(0, 1, payPane);
+			orderListCfg = new SLConfig(basePanel).gap(0, 0).row(1f).col(1f).col(2f)
+					.place(0, 0, menuScroll).place(0, 1, orderListTableScroll);
+		}
 		//basePanel
 		basePanel.setTweenManager(SLAnimator.createTweenManager());
 		basePanel.initialize(orderListCfg);

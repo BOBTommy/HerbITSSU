@@ -74,7 +74,7 @@ class OrderSystem extends JFrame{
 		
 		storePanel = new StorePanel(this);
 		pane.addTab("<html><body leftmargin=15 topmargin=8 marginwidth=15 marginheight=5 style='font-size: 18pt;'>재고관리</body></html>", storePanel);				//매장관리 탭을 추가
-		orderPanel = new OrderPanel(this);
+		orderPanel = new OrderPanel(this,false);
 		pane.addTab("<html><body leftmargin=15 topmargin=8 marginwidth=15 marginheight=5 style='font-size: 18pt;'>주문관리</body></html>", orderPanel);				//주문관리 탭을 추가
 		adminPanel = new AdminPanel(this);
 		pane.addTab("<html><body leftmargin=15 topmargin=8 marginwidth=15 marginheight=5 style='font-size: 18pt;'>관리자메뉴</body></html>", adminPanel);				//고객관리 탭을 추가
