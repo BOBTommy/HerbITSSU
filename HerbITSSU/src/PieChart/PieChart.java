@@ -89,6 +89,7 @@ public class PieChart{
 					}
 					int timeIndex = 0; // 9~11 : 0, 11~13 : 1, 13~15 : 2, 15~17 : 3,
 										// 17~19 : 4, 19~21 : 5
+					boolean gen = false;
 					while (i.hasNext()) {
 						HerbOrderTable hot = (HerbOrderTable) i.next();
 						SimpleDateFormat time = new SimpleDateFormat("kk");
@@ -126,7 +127,7 @@ public class PieChart{
 
 						String DATE_FORMAT2 = "yyyy-MM-dd kk:mm:ss";
 						SimpleDateFormat format2 = new SimpleDateFormat(DATE_FORMAT2);
-
+						gen = false;
 						while (resultSet2.next()) {
 							HerbMenuTable hmt = new HerbMenuTable();
 							hmt.setMenu_id(resultSet2.getInt("menu_id"));
@@ -139,9 +140,10 @@ public class PieChart{
 									new ParsePosition(0)));
 
 							res2.add(hmt);
+							if (gen == false) gen = true;
 						}
 						
-						sumOfSales[timeIndex] += res2.get(0).getMenu_price();
+						if (gen) sumOfSales[timeIndex] += res2.get(0).getMenu_price();
 						if( resultSet != null )resultSet.close();
 						if( resultSet2 != null )resultSet2.close();
 					}
@@ -259,17 +261,18 @@ public class PieChart{
 					Date now = format.parse(subDate, new ParsePosition(0));
 					long nowTime = now.getTime(); // 1970~ 현재 일 수
 					long tomorrowDayTime = ((nowTime/(24000 *3600))*24000*3600) + 24000*3600;	//내일 자정의 milliseconds
-					System.out.println(tomorrowDayTime);
-					System.out.println("-------");
+					//System.out.println(tomorrowDayTime);
+				//	System.out.println("-------");
+					boolean gen = false;
 					while (i.hasNext()) {
 						
 						HerbOrderTable hot = (HerbOrderTable) i.next();
 						long orderTime= hot.getOrder_date().getTime();
-						System.out.println(orderTime);
+					//	System.out.println(orderTime);
 						
 						long diffMillis = tomorrowDayTime - orderTime;
 						int diffDay = (int)(diffMillis/(24*60*60*1000));
-						System.out.println(diffDay);
+						//System.out.println(diffDay);
 						
 						if (diffDay >= 6) { // 6일 전
 							timeIndex = 0;
@@ -292,7 +295,7 @@ public class PieChart{
 
 						String DATE_FORMAT2 = "yyyy-MM-dd kk:mm:ss";
 						SimpleDateFormat format2 = new SimpleDateFormat(DATE_FORMAT2);
-
+						gen = false;
 						while (resultSet2.next()) {
 							HerbMenuTable hmt = new HerbMenuTable();
 							hmt.setMenu_id(resultSet2.getInt("menu_id"));
@@ -305,11 +308,12 @@ public class PieChart{
 									new ParsePosition(0)));
 
 							res2.add(hmt);
+							if (gen == false) gen = true;
 						}
 						if( resultSet != null )resultSet.close();
 						if( resultSet2 != null )resultSet2.close();
 
-						sumOfSales[timeIndex] += res2.get(0).getMenu_price();
+						if (gen) sumOfSales[timeIndex] += res2.get(0).getMenu_price();
 					}
 			
 					
@@ -391,6 +395,7 @@ public class PieChart{
 					int timeIndex = 0; //
 					Date now = format.parse(subDate, new ParsePosition(0));
 					long nowDay = now.getTime() / (3600 * 24000); // 1970~ 현재 일 수
+					boolean gen;
 					while (i.hasNext()) {
 						HerbOrderTable hot = (HerbOrderTable) i.next();
 						long orderDay = hot.getOrder_date().getTime()
@@ -413,7 +418,7 @@ public class PieChart{
 
 						String DATE_FORMAT2 = "yyyy-MM-dd kk:mm:ss";
 						SimpleDateFormat format2 = new SimpleDateFormat(DATE_FORMAT2);
-
+						gen = false;
 						while (resultSet2.next()) {
 							HerbMenuTable hmt = new HerbMenuTable();
 							hmt.setMenu_id(resultSet2.getInt("menu_id"));
@@ -426,11 +431,12 @@ public class PieChart{
 									new ParsePosition(0)));
 
 							res2.add(hmt);
+							if (gen == false) gen = true;
 						}
 						if( resultSet != null )resultSet.close();
 						if( resultSet2 != null )resultSet2.close();
 
-						sumOfSales[timeIndex] += res2.get(0).getMenu_price();
+						if (gen) sumOfSales[timeIndex] += res2.get(0).getMenu_price();
 					}
 
 					
@@ -517,6 +523,7 @@ public class PieChart{
 					int timeIndex = 0; //
 					Date now = format.parse(subDate, new ParsePosition(0));
 					long nowDay = now.getTime() / (3600 * 24000); // 1970~ 현재 일 수
+					boolean gen = false;
 					while (i.hasNext()) {
 						HerbOrderTable hot = (HerbOrderTable) i.next();
 						long orderDay = hot.getOrder_date().getTime()
@@ -554,7 +561,7 @@ public class PieChart{
 
 						String DATE_FORMAT2 = "yyyy-MM-dd kk:mm:ss";
 						SimpleDateFormat format2 = new SimpleDateFormat(DATE_FORMAT2);
-
+						gen = false;
 						while (resultSet2.next()) {
 							HerbMenuTable hmt = new HerbMenuTable();
 							hmt.setMenu_id(resultSet2.getInt("menu_id"));
@@ -567,11 +574,12 @@ public class PieChart{
 									new ParsePosition(0)));
 
 							res2.add(hmt);
+							if (gen == false) gen = true;
 						}
 						if( resultSet != null )resultSet.close();
 						if( resultSet2 != null )resultSet2.close();
 
-						sumOfSales[timeIndex] += res2.get(0).getMenu_price();
+						if (gen) sumOfSales[timeIndex] += res2.get(0).getMenu_price();
 					}
 					
 					int tmp[] = new int[12];
@@ -655,6 +663,7 @@ public class PieChart{
 					int timeIndex = 0; //
 					Date now = format.parse(subDate, new ParsePosition(0));
 					long nowDay = now.getTime() / (3600 * 24000); // 1970~ 현재 일 수
+					boolean gen = false;
 					while (i.hasNext()) {
 						HerbOrderTable hot = (HerbOrderTable) i.next();
 						long orderDay = hot.getOrder_date().getTime()
@@ -679,7 +688,7 @@ public class PieChart{
 
 						String DATE_FORMAT2 = "yyyy-MM-dd kk:mm:ss";
 						SimpleDateFormat format2 = new SimpleDateFormat(DATE_FORMAT2);
-
+						gen = false;
 						while (resultSet2.next()) {
 							HerbMenuTable hmt = new HerbMenuTable();
 							hmt.setMenu_id(resultSet2.getInt("menu_id"));
@@ -692,11 +701,12 @@ public class PieChart{
 									new ParsePosition(0)));
 
 							res2.add(hmt);
+							if (gen == false) gen = true;
 						}
 						if (resultSet != null) resultSet.close();
 						if (resultSet2 != null) resultSet2.close();
 
-						sumOfSales[timeIndex] += res2.get(0).getMenu_price();
+						if (gen == true) sumOfSales[timeIndex] += res2.get(0).getMenu_price();
 					}
 					
 					int tmp[] = new int[5];
