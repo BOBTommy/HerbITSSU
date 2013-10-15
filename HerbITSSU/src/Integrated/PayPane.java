@@ -247,7 +247,7 @@ public class PayPane extends JPanel{
 		//List가 비어있으면 따로 할일 없음
 		
 		//그렇지 않다면
-		String recText = "";
+		String recText = "<html>";
 		boolean flag = false; //추천할 아이템이 텍스트에 나타나야 하는지 체크
 		for(int i=0; i<orderList.size(); i++){
 			if(MenuList.herbRecMenuList.get(
@@ -255,9 +255,10 @@ public class PayPane extends JPanel{
 				flag = true;
 				recText += orderList.get(i).getMenuName() + "에 대하여 " +
 						MenuList.herbRecMenuList.get(orderList.get(i).getMenuName())
-						+ "을 추천합니다.\n";
+						+ "을 추천합니다.<br>";
 			}
 		}
+		recText += "</html>";
 		if(flag)//추천된 메뉴가 있는 경우
 			recommandLabel.setText(recText);
 	}

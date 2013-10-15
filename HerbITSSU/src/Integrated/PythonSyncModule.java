@@ -131,6 +131,24 @@ public class PythonSyncModule extends JFrame{
 					+ 1 +", " //order_count
 					+ "0, " //order_cash
 					+ "now());"); //order_date
+			
+		}
+		
+		for(int i=3000; i<6000; i++){
+			this.os.db.exec("INSERT INTO herb_order ("
+					+ "order_id, order_menu_id, order_count,  order_cash, order_date) VALUES( "
+					+ i + ", " // order_id
+					+ 146 + ", "
+					+ 1 +", " //order_count
+					+ "0, " //order_cash
+					+ "now());"); //order_date
+			this.os.db.exec("INSERT INTO herb_order ("
+					+ "order_id, order_menu_id, order_count,  order_cash, order_date) VALUES( "
+					+ i + ", " // order_id
+					+ 171 + ", "
+					+ 1 +", " //order_count
+					+ "0, " //order_cash
+					+ "now());"); //order_date
 		}*/
 		
 		//Menu List 받아오기
