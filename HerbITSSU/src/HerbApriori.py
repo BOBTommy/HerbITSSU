@@ -28,7 +28,7 @@ class HerbApriori(HerbAprioriType):
     Set = []
     rules = ""
 
-    def __init__(self, Set = [[1,3,4], [2,3,5], [1,2,3,5], [2,5]]):
+    def __init__(self):
 		f = open('C:/apriori.dat','r')
 		while 1:
 			line = f.readline()
@@ -37,8 +37,6 @@ class HerbApriori(HerbAprioriType):
 			int_li = map(int,li)
 			self.Set.append(int_li)
 			
-		if len(self.Set) < 2:
-			self.Set = [[1,3,4], [2,3,5], [1,2,3,5], [2,5]]
         
     def loadDataSet(self):
         return [[1,3,4], [2,3,5], [1,2,3,5], [2,5]]
@@ -94,7 +92,7 @@ class HerbApriori(HerbAprioriType):
             k+=1
         return L, supportData
         
-    def generateRules(self,L, supportData, minConf= 0.7):
+    def generateRules(self,L, supportData, minConf= 0.5):
         bigRuleList = []
         for i in range(1,len(L)):
             for freqSet in L[i]:
@@ -105,7 +103,7 @@ class HerbApriori(HerbAprioriType):
                     self.calcConf(freqSet, H1, supportData, bigRuleList, minConf)
         return bigRuleList
 
-    def calcConf(self,freqSet, H, supportData, brl, minConf=0.7):
+    def calcConf(self,freqSet, H, supportData, brl, minConf=0.5):
         prunedH = []
         for conseq in H:
             conf = supportData[freqSet]/supportData[freqSet-conseq]
@@ -115,7 +113,7 @@ class HerbApriori(HerbAprioriType):
                 prunedH.append(conseq)
         return prunedH
 
-    def rulesFromConseq(self,freqSet, H, supportData, brl, minConf=0.7):
+    def rulesFromConseq(self,freqSet, H, supportData, brl, minConf=0.5):
         m = len(H[0])
         if (len(freqSet) > (m+1)):
             Hmp1 = self.aprioriGen(H, m+1)
@@ -124,17 +122,17 @@ class HerbApriori(HerbAprioriType):
                 self.rulesFromConseq(freqSet, Hmp1, supportData, brl, minConf)
                 
     def getResult(self):
-        self.Set = self.loadDataSet()
+        #self.Set = self.loadDataSet()
         
         #print "#### Data Set is loaded####"
         #print self.Set
         
-        L, suppData = self.apriori(self.Set,minSupport=0.5)
+        L, suppData = self.apriori(self.Set,minSupport=0.4)
         #print "#### Support Data is set####"
         #print suppData
         
         #print "#### Result Rules are generated####"
-        self.rules = self.generateRules(L,suppData,minConf=0.5)
+        self.rules = self.generateRules(L,suppData,minConf=0.4)
         
         f = open('C:/herb.dat','w')
         my_str = ''
@@ -149,6 +147,8 @@ class HerbApriori(HerbAprioriType):
                 my_str += ' '
             f.write(my_str)
             f.write('\n')
+            
+        f.close()
         
     def getResultString(self):
         return str(self.rules)

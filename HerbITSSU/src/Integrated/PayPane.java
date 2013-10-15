@@ -64,7 +64,7 @@ public class PayPane extends JPanel{
 		//blackline = BorderFactory.createLineBorder(Color.black,5);
 		//this.setBorder(blackline);
 		
-		this.centerPanel = new JPanel(new GridLayout(4,1,10,10));
+		this.centerPanel = new JPanel(new GridLayout(7,1,10,10));
 		this.bottomPanel = new JPanel(new GridLayout(1,4,10,10));
 		
 		this.cardBtn = new JButton(new ImageIcon("image/order/카드결제.png"));
@@ -85,7 +85,13 @@ public class PayPane extends JPanel{
 	private void updatePanel(){
 		this.setLayout(new BorderLayout());
 		
-		this.centerPanel.setBorder(BorderFactory.createEmptyBorder(25, 10, 10, 10));
+		this.dateLabel.setFont(new Font("Sans", Font.BOLD, 25));
+		this.recommandLabel.setFont(new Font("Sans", Font.BOLD, 20));
+		this.ruleLabel.setFont(new Font("Sans", Font.BOLD, 11));
+		this.ruleLabel.setPreferredSize(new Dimension(400, 400));
+		this.totalLabel.setFont(new Font("Sans", Font.BOLD, 25));
+		
+		this.centerPanel.setBorder(BorderFactory.createEmptyBorder(20, 10, 10, 10));
 		updateCenterPanel();
 		this.add(this.centerPanel , BorderLayout.CENTER);
 		
@@ -135,7 +141,7 @@ public class PayPane extends JPanel{
 							+ "now());"); // order_date 
 					parent.resetTotal();
 					cancelBtn.doClick();
-					JOptionPane.showMessageDialog(null, "현금 결제 되었습니다!");
+					JOptionPane.showMessageDialog(null, "현금 결제가 완료되었습니다!");
 				}
 			}
 		}); 
@@ -169,7 +175,7 @@ public class PayPane extends JPanel{
 							+ "now());"); //order_date
 					parent.resetTotal();
 					cancelBtn.doClick();
-					JOptionPane.showMessageDialog(null, "카드 결제 되었습니다!");
+					JOptionPane.showMessageDialog(null, "카드 결제가 완료되었습니다!");
 				}
 			}
 		});
@@ -205,10 +211,15 @@ public class PayPane extends JPanel{
 		ruleLabel.setText(rule);
 		
 		this.centerPanel.add(dateLabel);
+		this.centerPanel.add(label);
 		this.centerPanel.add(totalLabel);
+		this.centerPanel.add(label);
 		this.centerPanel.add(recommandLabel);
+		this.centerPanel.add(label);
 		//추천 메뉴
 		this.centerPanel.add(ruleLabel);
+		
+		
 	}
 	
 	public void setPayBackAction(ActionListener payBackActionListener){
@@ -242,13 +253,13 @@ public class PayPane extends JPanel{
 			if(MenuList.herbRecMenuList.get(
 					orderList.get(i).getMenuName()) != null){
 				flag = true;
-				recText += orderList.get(i).getMenuName() + "에 대하여\n" +
+				recText += orderList.get(i).getMenuName() + "에 대하여 " +
 						MenuList.herbRecMenuList.get(orderList.get(i).getMenuName())
 						+ "을 추천합니다.\n";
 			}
 		}
 		if(flag)//추천된 메뉴가 있는 경우
-			ruleLabel.setText(recText);
+			recommandLabel.setText(recText);
 	}
 
 }

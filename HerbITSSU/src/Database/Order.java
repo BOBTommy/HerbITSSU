@@ -33,14 +33,14 @@ public class Order {
 	}
 	
 	public String toString(){
-		String result = "[";
+		String result = "";
 		for(int i=0; i<this.orderList.size(); i++)
 		{
 			result += this.orderList.get(i);
 			if(this.orderList.size()-1 != i)
 				result += ",";
 		}
-		result += "]";
+		//result += "]";
 		return result;
 	}
 	
