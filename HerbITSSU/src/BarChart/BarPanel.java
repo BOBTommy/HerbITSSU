@@ -40,10 +40,14 @@ public class BarPanel implements ActionListener
 		
 		leftPanel.setLayout(new FlowLayout());
 		leftPanel.removeAll();
+		//leftPanel.setLayout(null);
+		//leftPanel.setSize(1057, 900);
 		leftPanel.setVisible(false);
+		
 		leftPanel.add(this.targetPanel);
 		leftPanel.setVisible(true);
 		originalPanel = leftPanel;
+		
 		targetPanel.setLayout(new GridLayout(4,1, 20, 20));
 		//this.setSize(400,300);
 		
@@ -205,6 +209,8 @@ public class BarPanel implements ActionListener
 			originalPanel.removeAll();
 			//originalPanel.setLayout(null);					//픽셀작업필요한부분
 			//originalPanel.setSize(1200, 800);
+			originalPanel.setLayout(null);
+			originalPanel.setSize(1054, 600);
 			originalPanel.add(barC.getHistogramChart_HistogramChart());
 			
 			

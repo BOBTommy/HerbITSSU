@@ -2,18 +2,14 @@ package Integrated;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParsePosition;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Vector;
 
 import javax.swing.ImageIcon;
@@ -21,6 +17,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
@@ -50,28 +47,29 @@ public class AdminPanel extends JPanel {
 	private String dirPath = "c:/sales_export/";						//디렉토리 경로: c:\herb_export
 	private int tableIndex = 0;
 	private File file;
+	private JSplitPane masterPanel;
+	
 	public AdminPanel(final OrderSystem os) {
 		this.os = os;
-		
-
-		this.setLayout(new BorderLayout());
-		
-
+		leftPanel = new JPanel(null);
+		leftPanel.setSize(1057, 900);
 		leftPanel = new JPanel(new ModifiedFlowLayout());
 		leftScroll = new JScrollPane(leftPanel);
-		//leftScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		
-		this.add(leftScroll, BorderLayout.CENTER);
-
-		// leftPanel.setLayout( new BorderLayout() );
 		rightPanel = new JPanel(new ModifiedFlowLayout());
 		rightScroll = new JScrollPane(rightPanel);
-		//rightScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-		//rightScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-		this.add(rightScroll, BorderLayout.EAST);
 		
+		masterPanel = new JSplitPane();
+		masterPanel.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
+		masterPanel.setDividerSize(1);
+		masterPanel.setDividerLocation(1057);
+		masterPanel.setLeftComponent(leftPanel);
+		masterPanel.setRightComponent(rightPanel);
 		
+		this.setLayout(new BorderLayout());
+		this.add(masterPanel, BorderLayout.CENTER);
 		ExcelExportBtn = new JButton("csv로 내보내기");
+		
 		ExcelLabel = new JLabel("저장경로:c:/sales_export/");
 		ExcelExportBtn.addActionListener(new ActionListener() {
 			
@@ -189,7 +187,10 @@ public class AdminPanel extends JPanel {
 				/* 테이블 세팅 시작 */
 				adminTable = new JTable();
 				adminTableModel = new DefaultTableModel(null, columnNames);
+				
 				adminTable.setModel(adminTableModel);
+				adminTable.setFont(new Font("Malgun Gothic", Font.PLAIN, 20));
+				adminTable.setRowHeight(26);
 				adminTableScroll = new JScrollPane(adminTable);
 				adminTableScroll
 						.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
@@ -199,8 +200,16 @@ public class AdminPanel extends JPanel {
 								//adminTableModel.setDataVector(data, columnNames);
 				/* 테이블 세팅 끝 */
 
+				leftPanel.setLayout(null);
+				leftPanel.setSize(1057, 900);
+				adminTableScroll.setSize(1057, 450);
+				adminTableScroll.setLocation(0, 200);
 				
 				leftPanel.add(adminTableScroll, BorderLayout.CENTER);
+				ExcelLabel.setSize(200, 100);
+				
+				ExcelExportBtn.setSize(200, 100);
+				ExcelExportBtn.setLocation(500,850);
 				leftPanel.add(ExcelLabel);
 				leftPanel.add(ExcelExportBtn, BorderLayout.SOUTH);
 				leftPanel.setVisible(false);

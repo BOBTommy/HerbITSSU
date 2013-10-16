@@ -773,18 +773,18 @@ public class PieChart{
 		labelFont = chart.getTitle().getFont();
 		
 		labelFont = chart.getTitle().getFont();
-		chart.getTitle().setFont(new Font("±¼¸²", labelFont.getStyle(), labelFont.getSize()));
+		chart.getTitle().setFont(new Font("±¼¸²", labelFont.getStyle(), 20));
 		
 		//·¹ÀÌºí ¼öÁ¤
 
 		labelFont = plot.getLabelFont();
 
 		plot.setLabelFont(new Font("µ¸¿ò", labelFont.getStyle(), labelFont.getSize()));
-
-		 
+		chartPanel_PieChart.setLocation(0, 100);
+		chartPanel_PieChart.setSize(1054, 600);
 		//¹ü·Ê        
 
-		chart.getLegend().setItemFont(new Font("µ¸¿ò", Font.PLAIN, 10));
+		chart.getLegend().setItemFont(new Font("µ¸¿ò", Font.PLAIN, 20));
 	   return chartPanel_PieChart;
 	  }
 }

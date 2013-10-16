@@ -1,12 +1,15 @@
 package PieChart;
 
+import java.awt.Color;
+import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
-import java.awt.Font;
+
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -29,13 +32,16 @@ public class PiePanel implements ActionListener
 	JPanel datePanel = new JPanel(new GridLayout(1, 3, 25, 25));
 	//JPanel selectPanel = new JPanel(new GridLayout(4, 1, 0, 0));
 	JPanel bottomPanel = new JPanel(new GridLayout(3, 1, 25, 25));
+	JPanel originalPanel;
 	JComboBox yearBox, monthBox, dayBox;
 	Font bigFont = new Font("±º∏≤", Font.PLAIN, 25);
 	public PiePanel(String title, String label, JPanel leftPanel, DBGenerator db){
 		//super(title);
 		this.targetPanel = new JPanel();
+		this.originalPanel = leftPanel;
 		leftPanel.removeAll();
 		leftPanel.setVisible(false);
+		leftPanel.setLayout(new FlowLayout());
 		leftPanel.add(this.targetPanel);
 		leftPanel.setVisible(true);
 		
@@ -180,12 +186,14 @@ public class PiePanel implements ActionListener
 			
 			pieC.setData( indexStringOfUnits[ unitIndex ] );
 			
-			targetPanel.removeAll();
-			targetPanel.setLayout(new GridLayout(1, 1, 25, 25));
-			targetPanel.add(pieC.getPieChart_HistogramChart());
-			
-			targetPanel.setVisible(false);
-			targetPanel.setVisible(true);
+			originalPanel.removeAll();
+			originalPanel.setLayout(null);
+			originalPanel.setSize(1054, 900);
+			originalPanel.add(pieC.getPieChart_HistogramChart());
+			originalPanel.setBackground(new Color(255, 255, 255));
+			originalPanel.repaint();
+			//targetPanel.setVisible(false);
+			//targetPanel.setVisible(true);
 			//this.dispose();			//º±≈√√¢¿ª ¥›±‚
 			return;
 		

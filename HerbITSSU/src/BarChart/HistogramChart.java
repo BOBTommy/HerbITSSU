@@ -45,7 +45,7 @@ public class HistogramChart {
 		this.date = "\""+year+"-"
 				+ month+"-"
 				+ day
-				+" 00:00:00"
+				+" 23:59:59"
 				+"\"";
 	}
 	public void setData(String option) {
@@ -1440,7 +1440,7 @@ public class HistogramChart {
 
 		chart.getLegend().setItemFont(new Font("µ¸¿ò", Font.PLAIN, 20));
 		//chartPanel_HistogramChart.setSize(1200, 800);
-		
+		chartPanel_HistogramChart.setSize(1054, 600);
 		return chartPanel_HistogramChart;
 	}
 }
