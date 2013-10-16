@@ -48,7 +48,7 @@ public class Nth_InterpolatingPolynomial {
 					blocked_func[ k ][ k+j ]
 							= (blocked_func[ k+1 ][ k+j ] - blocked_func[ k ][ k+j-1 ]) / (x[ k+j ] - x[ k ]);
 					}catch (Exception e) {
-						blocked_func[ k ][ k+j ] = 0;
+						blocked_func[ k ][ k+j ] = blocked_func[ k+1 ][ k+j ] - blocked_func[ k ][ k+j-1 ];
 					}
 				} while(++k <= n-j);
 			} while (++j <= n-1);
