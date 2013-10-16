@@ -7,4 +7,4 @@ How to resolve our conflict problem : http://wiki.eclipse.org/EGit/User_Guide#Re
 
 Mile stone & Issues are updated.
 
-Everyone needs to check own issues.
+Collaborator : You can get email about our commit status if you are our collaborator
