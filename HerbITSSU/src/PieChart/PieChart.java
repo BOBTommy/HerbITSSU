@@ -262,13 +262,13 @@ public class PieChart{
 					long nowTime = now.getTime(); // 1970~ 현재 일 수
 					long tomorrowDayTime = ((nowTime/(24000 *3600))*24000*3600) + 24000*3600;	//내일 자정의 milliseconds
 					//System.out.println(tomorrowDayTime);
-				//	System.out.println("-------");
+				//	//System.out.println("-------");
 					boolean gen = false;
 					while (i.hasNext()) {
 						
 						HerbOrderTable hot = (HerbOrderTable) i.next();
 						long orderTime= hot.getOrder_date().getTime();
-					//	System.out.println(orderTime);
+					//	//System.out.println(orderTime);
 						
 						long diffMillis = tomorrowDayTime - orderTime;
 						int diffDay = (int)(diffMillis/(24*60*60*1000));

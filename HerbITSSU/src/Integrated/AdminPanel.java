@@ -44,6 +44,7 @@ public class AdminPanel extends JPanel {
 	private JButton ExcelExportBtn;
 	private JLabel ExcelLabel;
 	//private String excelFileName;				//파일 이름: 현재 날짜+.csv
+	private JPanel tableTopPanel;
 	private String dirPath = "c:/sales_export/";						//디렉토리 경로: c:\herb_export
 	private int tableIndex = 0;
 	private File file;
@@ -68,9 +69,14 @@ public class AdminPanel extends JPanel {
 		
 		this.setLayout(new BorderLayout());
 		this.add(masterPanel, BorderLayout.CENTER);
-		ExcelExportBtn = new JButton("csv로 내보내기");
 		
+		tableTopPanel = new JPanel();
+		ImageIcon imageIcon = new ImageIcon("image/admin/csv_button.png");
+		ExcelExportBtn = new JButton(imageIcon);
+		ExcelExportBtn.setPreferredSize(new Dimension(imageIcon.getIconWidth(), imageIcon.getIconHeight()));
 		ExcelLabel = new JLabel("저장경로:c:/sales_export/");
+		tableTopPanel.add(ExcelExportBtn);
+		tableTopPanel.add(ExcelLabel);
 		ExcelExportBtn.addActionListener(new ActionListener() {
 			
 			@Override
@@ -94,7 +100,7 @@ public class AdminPanel extends JPanel {
 
 		/* 우측패널에 버튼 달기 */
 		ImageIcon tmpIcon;
-		tmpIcon = new ImageIcon("image/admin/my_graph.png");
+		tmpIcon = new ImageIcon("image/admin/pie_graph.png");
 		pie = new JButton(tmpIcon);
 		pie.setPreferredSize(new Dimension(tmpIcon.getIconWidth(), tmpIcon.getIconHeight()));
 		pie.addActionListener(new ActionListener() {
@@ -200,18 +206,12 @@ public class AdminPanel extends JPanel {
 								//adminTableModel.setDataVector(data, columnNames);
 				/* 테이블 세팅 끝 */
 
-				leftPanel.setLayout(null);
-				leftPanel.setSize(1057, 900);
+				leftPanel.setLayout(new BorderLayout());
 				adminTableScroll.setSize(1057, 450);
 				adminTableScroll.setLocation(0, 200);
 				
+				leftPanel.add(tableTopPanel, BorderLayout.NORTH);
 				leftPanel.add(adminTableScroll, BorderLayout.CENTER);
-				ExcelLabel.setSize(200, 100);
-				
-				ExcelExportBtn.setSize(200, 100);
-				ExcelExportBtn.setLocation(500,850);
-				leftPanel.add(ExcelLabel);
-				leftPanel.add(ExcelExportBtn, BorderLayout.SOUTH);
 				leftPanel.setVisible(false);
 				leftPanel.setVisible(true);
 
@@ -291,7 +291,7 @@ public class AdminPanel extends JPanel {
 				else {
 					
 				}
-				temp.add( tempDay);
+				temp.add(tempDay);
 				temp.add(dayCnt);
 				temp.add(tempOrder);
 				temp.add(rs.getString("menu_name"));

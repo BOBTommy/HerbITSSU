@@ -11,15 +11,10 @@ import java.awt.Window;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
-import javax.swing.JTabbedPane;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import Database.DBGenerator;
-import aurelienribon.slidinglayout.SLAnimator;
-import aurelienribon.slidinglayout.SLConfig;
-import aurelienribon.slidinglayout.SLPanel;
 
 class OrderSystem extends JFrame{
 	Container contentPane;		//컨텐츠를 포함하는 컨텐트팬
@@ -56,6 +51,7 @@ class OrderSystem extends JFrame{
             }
         } );
         
+        
 		if( db != null && db.connectDB() ){
 			System.out.println("connected to db");;
 		}
@@ -73,11 +69,11 @@ class OrderSystem extends JFrame{
 		HerbPane pane = new HerbPane();		//HerbPane에 주문관리, 매장관리, 고객관리 탭을 추가한다.
 		
 		storePanel = new StorePanel(this);
-		pane.addTab("<html><body leftmargin=15 topmargin=8 marginwidth=15 marginheight=5 style='font-size: 18pt;'>재고관리</body></html>", storePanel);				//매장관리 탭을 추가
+		pane.addTab("", new ImageIcon("image/tap_stock.png"), storePanel);				//매장관리 탭을 추가
 		orderPanel = new OrderPanel(this,false);
-		pane.addTab("<html><body leftmargin=15 topmargin=8 marginwidth=15 marginheight=5 style='font-size: 18pt;'>주문관리</body></html>", orderPanel);				//주문관리 탭을 추가
+		pane.addTab("", new ImageIcon("image/tap_order.png"), orderPanel);				//주문관리 탭을 추가
 		adminPanel = new AdminPanel(this);
-		pane.addTab("<html><body leftmargin=15 topmargin=8 marginwidth=15 marginheight=5 style='font-size: 18pt;'>관리자메뉴</body></html>", adminPanel);				//고객관리 탭을 추가
+		pane.addTab("", new ImageIcon("image/tap_manager.png"), adminPanel);				//고객관리 탭을 추가
 		return pane;
 	}
 	

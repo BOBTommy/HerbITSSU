@@ -276,9 +276,9 @@ public class HistogramChart {
 						(x, sumOfSalesAllArray, indSum+2, indSum
 								);
 				
-				System.out.println(indSum+"번째, "+x +":" + sumOfSalesAllArray.length);
+				//System.out.println(indSum+"번째, "+x +":" + sumOfSalesAllArray.length);
 				long val = appx.getVal();	//예측된 값
-				System.out.println(val);
+			//System.out.println(val);
 				if( val < 0) val =0; //음수  삭제
 				dataSet.addValue(val, category_approximationData, tmp[tmp.length-1] +2 +"시");
 				
@@ -352,18 +352,18 @@ public class HistogramChart {
 				
 				
 				long tomorrowDayTime = ((nowTime/(24000 *3600))*24000*3600) + 24000*3600;	//내일 자정의 milliseconds
-				System.out.println(tomorrowDayTime);
-				System.out.println("-------");
+				//System.out.println(tomorrowDayTime);
+				//System.out.println("-------");
 				boolean gen = false;
 				while (i.hasNext()) {
 					
 					HerbOrderTable hot = (HerbOrderTable) i.next();
 					long orderTime= hot.getOrder_date().getTime();
-					System.out.println(orderTime);
+					//System.out.println(orderTime);
 					
 					long diffMillis = tomorrowDayTime - orderTime;
 					int diffDay = (int)(diffMillis/(24*60*60*1000));
-					System.out.println(diffDay);
+					//System.out.println(diffDay);
 					
 					if (diffDay >= 6) { // 6일 전
 						timeIndex = 0;
@@ -403,7 +403,7 @@ public class HistogramChart {
 					}
 					if( resultSet != null )resultSet.close();
 					if( resultSet2 != null )resultSet2.close();
-					System.out.println(gen);
+					//System.out.println(gen);
 					if (gen) sumOfSales[timeIndex] += res2.get(0).getMenu_price()* hot.getOrder_count();
 				}
 		
@@ -524,14 +524,14 @@ public class HistogramChart {
 				int x[] = new int[list.size()];
 				for (int x_tmp = 0; x_tmp < x.length; x_tmp ++) {
 					x[x_tmp] = x_tmp;
-					System.out.println("x: "+x[x_tmp]);
+					//System.out.println("x: "+x[x_tmp]);
 				}
 				
 				long [] y = new long[ list.size() ];
 				int ind=0;
 				for (Iterator it = list.iterator(); it.hasNext(); ) {
 					y[ind++] = (long)it.next();
-					System.out.println(ind-1+": "+y[ind-1]);
+					//System.out.println(ind-1+": "+y[ind-1]);
 				}
 				// 마지막 원소 n : 1 부터 4까지 ( x축 갯수가 5개일 경우)
 				int indSum = x.length - 1;
@@ -541,7 +541,7 @@ public class HistogramChart {
 					//	(tmp, arrayBiggerThanZero, 1, 1 );
 				//음수  삭제
 				long val = appx.getVal();
-				System.out.println(val);
+				//System.out.println(val);
 				if( val < 0) val =0;
 				dataSet.addValue( val, category_approximationData, "1일 후");
 				
@@ -793,7 +793,7 @@ public class HistogramChart {
 				
 				//음수  삭제
 				long val = appx.getVal();
-				System.out.println(val);
+				//System.out.println(val);
 				if( val < 0) val =0;
 				dataSet.addValue( val, category_approximationData
 						, "1주일 뒤");
@@ -1057,7 +1057,7 @@ public class HistogramChart {
 				
 				for (Iterator it = list.iterator(); it.hasNext(); ) {
 					y[ind++] = (long)it.next();
-					System.out.println(y[ind-1]);
+				//System.out.println(y[ind-1]);
 				}
 				// 마지막 원소 n : 1 부터 4까지 ( x축 갯수가 5개일 경우)
 				int indSum = x.length - 1;
@@ -1156,21 +1156,21 @@ public class HistogramChart {
 
 				
 					if (nowDay - orderDay > 365 * 4) { // 년 전
-						System.out.println(nowDay+":1: "+orderDay);
+					//System.out.println(nowDay+":1: "+orderDay);
 						timeIndex = 0;
 					} else if (nowDay - orderDay > 365 * 3) {
-						System.out.println(nowDay+":2: "+orderDay);
+					//System.out.println(nowDay+":2: "+orderDay);
 						timeIndex = 1;
 					} else if (nowDay - orderDay > 365 * 2) {
-						System.out.println(nowDay+":3: "+orderDay);
+					//System.out.println(nowDay+":3: "+orderDay);
 						timeIndex = 2;
 					} else if (nowDay - orderDay > 365 * 1) {
-						System.out.println(nowDay+":4: "+orderDay);
+					//System.out.println(nowDay+":4: "+orderDay);
 						timeIndex = 3;
 					} else {
-						System.out.println(nowDay+":5: "+orderDay);
-						System.out.println(date);
-						System.out.println(hot.getOrder_date());
+					//System.out.println(nowDay+":5: "+orderDay);
+					//System.out.println(date);
+					//System.out.println(hot.getOrder_date());
 						timeIndex = 4;
 					}
 					
@@ -1331,7 +1331,7 @@ public class HistogramChart {
 				
 				for (Iterator it = list.iterator(); it.hasNext(); ) {
 					y[ind++] = (long)it.next();
-					System.out.println(y[ind-1]);
+				//System.out.println(y[ind-1]);
 				}
 				// 마지막 원소 n : 1 부터 4까지 ( x축 갯수가 5개일 경우)
 				int indSum = x.length - 1;

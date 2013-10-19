@@ -30,24 +30,27 @@ public class DBGenerator {
         
         public ResultSet exec(String query) {
         	ResultSet res = null;
-        	query = query.trim();
-        	boolean isSelectQuery = false;
-        	if( query.toUpperCase().substring(0, 6).compareTo("SELECT") == 0 ){
-        		isSelectQuery = true;
-        	}
         	
-    		try{
-    			if( isSelectQuery ){
-    				rs = stmt.executeQuery(query);
-    			}
-    			else {
-    				stmt.executeUpdate(query);
-    			}
-    			res = rs;
-    		}catch( java.sql.SQLException e ){
-    			System.out.println("SQLException: " + e.getMessage());
-	            e.printStackTrace();
-    		}
+        	if (conn != null) {
+	        	query = query.trim();
+	        	boolean isSelectQuery = false;
+	        	if( query.toUpperCase().substring(0, 6).compareTo("SELECT") == 0 ){
+	        		isSelectQuery = true;
+	        	}
+	        	
+	    		try{
+	    			if( isSelectQuery ){
+	    				rs = stmt.executeQuery(query);
+	    			}
+	    			else {
+	    				stmt.executeUpdate(query);
+	    			}
+	    			res = rs;
+	    		}catch( java.sql.SQLException e ){
+	    			System.out.println("SQLException: " + e.getMessage());
+		            e.printStackTrace();
+	    		}
+        	}
     		return res;
         	
         }
@@ -77,4 +80,9 @@ public class DBGenerator {
 	    	return res;
 	    }
 	  
+	    public boolean isConnected() {
+	    	if (conn == null)
+	    		return false;
+	    	return true;
+	    }
 }

@@ -1,5 +1,7 @@
 package BarChart;
 
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
@@ -9,6 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -37,7 +40,6 @@ public class BarPanel implements ActionListener
 	public BarPanel(String title, String label, JPanel leftPanel, DBGenerator db){
 		//super(title);
 		this.targetPanel = new JPanel();
-		
 		leftPanel.setLayout(new FlowLayout());
 		leftPanel.removeAll();
 		//leftPanel.setLayout(null);
@@ -55,36 +57,54 @@ public class BarPanel implements ActionListener
 		//this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
 		//버튼생성
+		ImageIcon imageIcon;
 		btn[0] = new JButton("시간 단위");
 		btn[0].setFont(bigFont);
 		btn[0].addActionListener(this);
-		btn[1] = new JButton("일 단위");
+		imageIcon = new ImageIcon("image/admin/day_day.png");
+		btn[1] = new JButton(imageIcon);
+		btn[1].setPreferredSize(new Dimension(imageIcon.getIconWidth(), imageIcon.getIconHeight()));
 		btn[1].setFont(bigFont);
 		btn[1].addActionListener(this);
-		btn[2] = new JButton("주 단위");
+		imageIcon = new ImageIcon("image/admin/week_week.png");
+		btn[2] = new JButton(imageIcon);
+		btn[2].setPreferredSize(new Dimension(imageIcon.getIconWidth(), imageIcon.getIconHeight()));
 		btn[2].setFont(bigFont);
 		btn[2].addActionListener(this);
-		btn[3] = new JButton("월 단위");
+		imageIcon = new ImageIcon("image/admin/month_month.png");
+		btn[3] = new JButton(imageIcon);
+		btn[3].setPreferredSize(new Dimension(imageIcon.getIconWidth(), imageIcon.getIconHeight()));
 		btn[3].setFont(bigFont);
 		btn[3].addActionListener(this);
-		btn[4] = new JButton("일년 단위");
+		imageIcon = new ImageIcon("image/admin/year_year.png");
+		btn[4] = new JButton(imageIcon);
+		btn[4].setPreferredSize(new Dimension(imageIcon.getIconWidth(), imageIcon.getIconHeight()));
 		btn[4].setFont(bigFont);
 		btn[4].addActionListener(this);
-		btn_2nd[0] = new JButton("전체 곡선 기반(가장 느림)");
+		imageIcon = new ImageIcon("image/admin/ordertap_whole_round.png");
+		btn_2nd[0] = new JButton(imageIcon);
+		btn_2nd[0].setPreferredSize(new Dimension(imageIcon.getIconWidth(), imageIcon.getIconHeight()));
 		btn_2nd[0].setFont(bigFont);
 		btn_2nd[0].addActionListener(this);
-		btn_2nd[1] = new JButton("전체 직선 기반(느림)");
+		imageIcon = new ImageIcon("image/admin/ordertap_whole_straight.png");
+		btn_2nd[1] = new JButton(imageIcon);
+		btn_2nd[1].setPreferredSize(new Dimension(imageIcon.getIconWidth(), imageIcon.getIconHeight()));
 		btn_2nd[1].setFont(bigFont);
 		btn_2nd[1].addActionListener(this);
-		btn_2nd[2] = new JButton("일부 곡선 기반(빠름)");
+		imageIcon = new ImageIcon("image/admin/ordertap_part_round.png");
+		btn_2nd[2] = new JButton(imageIcon);
+		btn_2nd[2].setPreferredSize(new Dimension(imageIcon.getIconWidth(), imageIcon.getIconHeight()));
 		btn_2nd[2].setFont(bigFont);
 		btn_2nd[2].addActionListener(this);
-		btn_2nd[3] = new JButton("일부 직선 기반(가장 빠름)");
+		imageIcon = new ImageIcon("image/admin/ordertap_part_straght.png");
+		btn_2nd[3] = new JButton(imageIcon);
+		btn_2nd[3].setPreferredSize(new Dimension(imageIcon.getIconWidth(), imageIcon.getIconHeight()));
 		btn_2nd[3].setFont(bigFont);
 		btn_2nd[3].addActionListener(this);
 		//프레임에 추가
-		label += "\r\n";
-		label1 = new JLabel(label, JLabel.CENTER);
+		imageIcon = new ImageIcon("image/admin/choice_unit.png");
+		label1 = new JLabel(imageIcon);
+		label1.setPreferredSize(new Dimension(imageIcon.getIconWidth(), imageIcon.getIconHeight()));
 		//label2 = new JLabel();
 		//this.add(new JLabel(label,JLabel.CENTER));
 		//this.add(new JLabel());
@@ -156,7 +176,9 @@ public class BarPanel implements ActionListener
 		datePanel.add( monthBox );
 		datePanel.add( dayBox );
 		//datePanel.add( new JLabel() );
-		JLabel chooseDay = new JLabel("출력할 기준일을 선택하세요", JLabel.CENTER);
+		imageIcon = new ImageIcon("image/admin/choice_day.png");
+		JLabel chooseDay = new JLabel(imageIcon);
+		chooseDay.setPreferredSize(new Dimension(imageIcon.getIconWidth(), imageIcon.getIconHeight()));
 		chooseDay.setFont(bigFont);
 		bottomPanel.add(chooseDay);
 				
@@ -167,6 +189,12 @@ public class BarPanel implements ActionListener
 		bottomPanel.add( btn_2nd[3] );
 		
 		//창보이기
+		datePanel.setBackground(new Color(0x898a8c));
+		bottom1P.setBackground(new Color(0x898a8c));
+		bottom2P.setBackground(new Color(0x898a8c));
+		bottom3P.setBackground(new Color(0x898a8c));
+		bottomPanel.setBackground(new Color(0x898a8c));
+		targetPanel.setBackground(new Color(0x898a8c));
 		targetPanel.setVisible(false);
 		targetPanel.setVisible(true);
 	}

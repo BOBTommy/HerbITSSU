@@ -57,7 +57,7 @@ class OrderPanel extends JPanel {
 	
 	//Pay Panel
 	private PayPane payPane = new PayPane("결제창 샘플", this);
-	private JButton payButton = new JButton("결제하기");
+	private JButton payButton;
 	
 	//Mody Use Variable
 	private String modyName;
@@ -75,26 +75,32 @@ class OrderPanel extends JPanel {
 		categoryPanel.setLayout(new ModifiedFlowLayout());
 		menuScroll.setBorder(null);
 		menuPanel.setLayout(new ModifiedFlowLayout());
-		try { //Loading Categories
-			java.sql.ResultSet rs = os.db
-					.exec("select distinct menu_category from herb_menu order by menu_category");
-			
-			categoryPanel.removeAll();
-			categoryList.clear();
-			ImageIcon imageIcon;
-			JButton categoryBtn;
-			while (rs.next()) {
-				imageIcon = new ImageIcon("image/order/" + rs.getString("menu_category").replace("/", "") + ".png");
-				categoryBtn = new JButton(imageIcon);
-				categoryBtn.setPreferredSize(new Dimension(imageIcon.getIconWidth(), imageIcon.getIconHeight()));
-				categoryBtn.addActionListener(new categoryListener());
-				categoryList.put(categoryBtn, rs.getString("menu_category"));
-				categoryPanel.add(categoryBtn);
+		if (os.db.isConnected()) {
+			try { //Loading Categories
+				java.sql.ResultSet rs = os.db
+						.exec("select distinct menu_category from herb_menu order by menu_category");
+				
+				categoryPanel.removeAll();
+				categoryList.clear();
+				ImageIcon imageIcon;
+				JButton categoryBtn;
+				while (rs.next()) {
+					imageIcon = new ImageIcon("image/order/" + rs.getString("menu_category").replace("/", "") + ".png");
+					categoryBtn = new JButton(imageIcon);
+					categoryBtn.setRolloverIcon(new ImageIcon("image/order/" + rs.getString("menu_category").replace("/", "") + "_over.png"));
+					categoryBtn.setPreferredSize(new Dimension(imageIcon.getIconWidth(), imageIcon.getIconHeight()));
+					categoryBtn.addActionListener(new categoryListener());
+					categoryList.put(categoryBtn, rs.getString("menu_category"));
+					categoryPanel.add(categoryBtn);
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
 			}
-		} catch (SQLException e) {
-			e.printStackTrace();
 		}
-		payButton.setPreferredSize(new Dimension(325, 80));
+		
+		ImageIcon imageIcon = new ImageIcon("image/order/ordertap_payment.png");
+		payButton = new JButton(imageIcon);
+		payButton.setPreferredSize(new Dimension(imageIcon.getIconWidth(), imageIcon.getIconHeight()));
 		payButton.addActionListener(new ActionRunner(payAction));
 		
 		//OrderListPanel

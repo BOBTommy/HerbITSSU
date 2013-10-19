@@ -1,5 +1,6 @@
 package Integrated;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -59,6 +60,7 @@ class StorePanel extends JPanel{
 	private GraphPane inventoryGraph = new GraphPane(DAYS_OF_EXPECTATION);
 	
 	private JPanel modificationPanel = new JPanel();
+	private JPanel modifButtonPanel = new JPanel();
 	private JLabel modifIDLbl, modifNameLbl, modifUnitLbl, modifDateLbl, modifStockLbl;
 	private JTextField modifID, modifName, modifUnit, modifDate, modifStock;
 	private JButton modifOK, modifCancel;
@@ -88,6 +90,7 @@ class StorePanel extends JPanel{
 		//inventoryPanel
 		inventoryScroll.setBorder(null);
 		inventoryPanel.setLayout(new ModifiedFlowLayout());
+		inventoryPanel.setBackground(new Color(0xEBECEE));
 		loadInventory();
 		changeMode(INVEN_MODE, false);
 		
@@ -103,12 +106,20 @@ class StorePanel extends JPanel{
 		modifUnit = new JTextField(10);
 		modifDate = new JTextField(16);
 		modifStock = new JTextField(10);
-		modifOK = new JButton("수정하기");
-		modifCancel = new JButton("취소");
+		ImageIcon imageIcon;
+		imageIcon = new ImageIcon("image/store/confirm.png");
+		modifOK = new JButton(imageIcon);
+		modifOK.setPreferredSize(new Dimension(imageIcon.getIconWidth(), imageIcon.getIconHeight()));
+		imageIcon = new ImageIcon("image/store/cancel.png");
+		modifCancel = new JButton(imageIcon);
+		modifCancel.setPreferredSize(new Dimension(imageIcon.getIconWidth(), imageIcon.getIconHeight()));
+		
 		modifID.setEditable(false);
 		modifDate.setEditable(false);
 		modifOK.addActionListener(new ModificationListener());
 		modifCancel.addActionListener(new ModificationListener());
+		modifButtonPanel.add(modifOK);
+		modifButtonPanel.add(modifCancel);
 		modificationPanel.add(modifIDLbl);
 		modificationPanel.add(modifID);
 		modificationPanel.add(modifNameLbl);
@@ -119,8 +130,7 @@ class StorePanel extends JPanel{
 		modificationPanel.add(modifDate);
 		modificationPanel.add(modifStockLbl);
 		modificationPanel.add(modifStock);
-		modificationPanel.add(modifOK);
-		modificationPanel.add(modifCancel);
+		modificationPanel.add(modifButtonPanel);
 		
 		//Sliding Configs
 		invenCfg = new SLConfig(basePanel).gap(0, 0).row(1f).col(1f)
@@ -228,99 +238,102 @@ class StorePanel extends JPanel{
 				String sql = "select * from herb_inventory where "
 						+ "inventory_name = '" + invenName + "'";
 				
-				try {
-					java.sql.ResultSet rs = os.db.exec(sql);
-					rs.next();					
-					
-					int inventory_id = rs.getInt("inventory_id");
-					sql = "SELECT * FROM (SELECT ("
-								+ "SELECT sum(invenlog_value) "
-								+ "FROM herb_invenlog b "
-								+ "WHERE b.invenlog_inventory_id = a.invenlog_inventory_id "
-								  + "and b.invenlog_regdate <= a.invenlog_regdate "
-								+ ") as invenlog_value, a.invenlog_day, a.invenlog_regdate "
-							+ "FROM herb_invenlog a "
-							+ "WHERE a.invenlog_inventory_id = " + inventory_id + " "
-							+ "and date(a.invenlog_regdate) >= " + afterDateOf + " "
-							+ "and date(a.invenlog_regdate) <= " + beforeDateOf + " "
-							+ "ORDER BY a.invenlog_regdate DESC "
-							+ "LIMIT 0, " + (DAYS_OF_GRAPH - DAYS_OF_EXPECTATION) + ") as alias_name ORDER BY alias_name.invenlog_regdate ASC";
-					rs = os.db.exec(sql);
-					
-					System.out.println(invenName + " -----------------------------");
-					int cnt = 0;
-					long lastTimeValue = 0;
-					int lastDay = 0;
-					int lastValue = 0;
-					int tmpPoints[] = new int[DAYS_OF_GRAPH];
-					String tmpLabels[] = new String[DAYS_OF_GRAPH];
-					while (rs.next() && (DAYS_OF_GRAPH - DAYS_OF_EXPECTATION - cnt > 0)) {
-						lastTimeValue = DateUtil.convUserTypedStringToTimeValue(rs.getString("invenlog_regdate"), "yyyy-MM-dd kk:mm:ss");
-						lastDay = Integer.parseInt(rs.getString("invenlog_day"));
-						lastValue = rs.getInt("invenlog_value");
-						tmpLabels[cnt] = DateUtil.convTimeValueToUserTypedString(lastTimeValue, "MM-dd");
-						tmpPoints[cnt] = lastValue;
-						cnt++;
+				if (os.db.isConnected()) {
+					try {
+						java.sql.ResultSet rs = os.db.exec(sql);
+						rs.next();					
+						
+						int inventory_id = rs.getInt("inventory_id");
+						sql = "SELECT * FROM (SELECT ("
+									+ "SELECT sum(invenlog_value) "
+									+ "FROM herb_invenlog b "
+									+ "WHERE b.invenlog_inventory_id = a.invenlog_inventory_id "
+									  + "and b.invenlog_regdate <= a.invenlog_regdate "
+									+ ") as invenlog_value, a.invenlog_day, a.invenlog_regdate "
+								+ "FROM herb_invenlog a "
+								+ "WHERE a.invenlog_inventory_id = " + inventory_id + " "
+								+ "and date(a.invenlog_regdate) >= " + afterDateOf + " "
+								+ "and date(a.invenlog_regdate) <= " + beforeDateOf + " "
+								+ "ORDER BY a.invenlog_regdate DESC "
+								+ "LIMIT 0, " + (DAYS_OF_GRAPH - DAYS_OF_EXPECTATION) + ") as alias_name ORDER BY alias_name.invenlog_regdate ASC";
+						rs = os.db.exec(sql);
+						
+						int cnt = 0;
+						long lastTimeValue = 0;
+						int lastDay = 0;
+						int lastValue = 0;
+						int tmpPoints[] = new int[DAYS_OF_GRAPH];
+						String tmpLabels[] = new String[DAYS_OF_GRAPH];
+						while (rs.next() && (DAYS_OF_GRAPH - DAYS_OF_EXPECTATION - cnt > 0)) {
+							lastTimeValue = DateUtil.convUserTypedStringToTimeValue(rs.getString("invenlog_regdate"), "yyyy-MM-dd kk:mm:ss");
+							lastDay = Integer.parseInt(rs.getString("invenlog_day"));
+							lastValue = rs.getInt("invenlog_value");
+							tmpLabels[cnt] = DateUtil.convTimeValueToUserTypedString(lastTimeValue, "MM-dd");
+							tmpPoints[cnt] = lastValue;
+							cnt++;
+						}
+						
+						//Average
+						int avg_value[] = new int[8];
+						rs = os.db.exec(sql);
+						rs.next();					
+						
+						sql = "SELECT cast(avg(invenlog_value) as signed) as invenlog_avgvalue, invenlog_day " 
+								+ "FROM herb_invenlog " 
+								+ "WHERE invenlog_inventory_id = " + inventory_id + " and invenlog_value < 0 " 
+								+ "GROUP BY invenlog_day "
+								+ "ORDER BY invenlog_day ASC ";
+						rs = os.db.exec(sql);
+						while (rs.next()) {
+							avg_value[rs.getInt("invenlog_day")] = rs.getInt("invenlog_avgvalue");
+						}
+						
+						for (int i = 1; i <= DAYS_OF_EXPECTATION; i++) {
+							lastTimeValue = lastTimeValue + 86400 * 1000;
+							lastValue = lastValue + avg_value[(lastDay - 1 + i) % 7 + 1];
+							tmpLabels[cnt + i - 1] = DateUtil.convTimeValueToUserTypedString(lastTimeValue, "MM-dd");
+							tmpPoints[cnt + i - 1] = lastValue;
+						}
+						
+						inventoryGraph.setPoints(tmpPoints, tmpLabels, invenName);
+					} catch (SQLException ex) {
+						ex.printStackTrace();
 					}
-					
-					//Average
-					int avg_value[] = new int[8];
-					rs = os.db.exec(sql);
-					rs.next();					
-					
-					sql = "SELECT cast(avg(invenlog_value) as signed) as invenlog_avgvalue, invenlog_day " 
-							+ "FROM herb_invenlog " 
-							+ "WHERE invenlog_inventory_id = " + inventory_id + " and invenlog_value < 0 " 
-							+ "GROUP BY invenlog_day "
-							+ "ORDER BY invenlog_day ASC ";
-					rs = os.db.exec(sql);
-					while (rs.next()) {
-						avg_value[rs.getInt("invenlog_day")] = rs.getInt("invenlog_avgvalue");
-					}
-					
-					for (int i = 1; i <= DAYS_OF_EXPECTATION; i++) {
-						lastTimeValue = lastTimeValue + 86400 * 1000;
-						lastValue = lastValue + avg_value[(lastDay - 1 + i) % 7 + 1];
-						tmpLabels[cnt + i - 1] = DateUtil.convTimeValueToUserTypedString(lastTimeValue, "MM-dd");
-						tmpPoints[cnt + i - 1] = lastValue;
-					}
-					
-					inventoryGraph.setPoints(tmpPoints, tmpLabels, invenName);
-				} catch (SQLException ex) {
-					ex.printStackTrace();
 				}
 				
 				changeMode(GRAPH_MODE);
 			} else {
-				try {
-					java.sql.ResultSet rs = os.db
-							.exec("select * from herb_inventory "
-									+ "where inventory_name='" + invenName + "'");
-					
-					if (rs.next()) {
-						modifID.setText(rs.getString("inventory_id"));
-						modifName.setText(rs.getString("inventory_name"));
-						modifUnit.setText(rs.getString("inventory_unit"));
-						modifDate.setText(rs.getString("inventory_regdate"));
-					
-						String sql = "SELECT ("
-								+ "SELECT sum(invenlog_value) "
-								+ "FROM herb_invenlog b "
-								+ "WHERE b.invenlog_inventory_id = a.invenlog_inventory_id "
-								  + "and b.invenlog_regdate <= a.invenlog_regdate "
-								+ ") as invenlog_value, a.invenlog_day, a.invenlog_regdate "
-							+ "FROM herb_invenlog a "
-							+ "WHERE a.invenlog_inventory_id = " + rs.getString("inventory_id") + " "
-							+ "ORDER BY a.invenlog_regdate DESC "
-							+ "LIMIT 0, 1";
-						rs = os.db.exec(sql);
-						rs.next();
+				if (os.db.isConnected()) {
+					try {
+						java.sql.ResultSet rs = os.db
+								.exec("select * from herb_inventory "
+										+ "where inventory_name='" + invenName + "'");
 						
-						modifOriStock = rs.getInt("invenlog_value");
-						modifStock.setText(rs.getString("invenlog_value"));
+						if (rs.next()) {
+							modifID.setText(rs.getString("inventory_id"));
+							modifName.setText(rs.getString("inventory_name"));
+							modifUnit.setText(rs.getString("inventory_unit"));
+							modifDate.setText(rs.getString("inventory_regdate"));
+						
+							String sql = "SELECT ("
+									+ "SELECT sum(invenlog_value) "
+									+ "FROM herb_invenlog b "
+									+ "WHERE b.invenlog_inventory_id = a.invenlog_inventory_id "
+									  + "and b.invenlog_regdate <= a.invenlog_regdate "
+									+ ") as invenlog_value, a.invenlog_day, a.invenlog_regdate "
+								+ "FROM herb_invenlog a "
+								+ "WHERE a.invenlog_inventory_id = " + rs.getString("inventory_id") + " "
+								+ "ORDER BY a.invenlog_regdate DESC "
+								+ "LIMIT 0, 1";
+							rs = os.db.exec(sql);
+							rs.next();
+							
+							modifOriStock = rs.getInt("invenlog_value");
+							modifStock.setText(rs.getString("invenlog_value"));
+						}
+					} catch (SQLException ex) {
+						ex.printStackTrace();
 					}
-				} catch (SQLException ex) {
-					ex.printStackTrace();
 				}
 			}
 		}
@@ -419,22 +432,25 @@ class StorePanel extends JPanel{
 			
 			//Load Inventory List and Create Buttons
 			
-			java.sql.ResultSet rs = os.db
-					.exec("select * from herb_inventory");
-			
-			inventoryPanel.removeAll();
-			inventoryList.clear();
-			ImageIcon imageIcon;
-			JButton inventoryBtn; //Tmp
-			while (rs.next()) {
-				imageIcon = new ImageIcon("image/store/" + rs.getString("inventory_name") + ".png");
-				inventoryBtn = new JButton(imageIcon);
-				inventoryBtn.setPreferredSize(new Dimension(130, 130));
-				inventoryBtn.addActionListener(new InventoryListener());
-				inventoryList.put(inventoryBtn, rs.getString("inventory_name"));
-				inventoryPanel.add(inventoryBtn);
+			if (os.db.isConnected()) {
+				java.sql.ResultSet rs = os.db
+						.exec("select * from herb_inventory");
+				
+				inventoryPanel.removeAll();
+				inventoryList.clear();
+				ImageIcon imageIcon;
+				JButton inventoryBtn; //Tmp
+				while (rs.next()) {
+					imageIcon = new ImageIcon("image/store/" + rs.getString("inventory_name") + ".png");
+					inventoryBtn = new JButton(imageIcon);
+					inventoryBtn.setRolloverIcon(new ImageIcon("image/store/" + rs.getString("inventory_name") + "_over.png"));
+					inventoryBtn.setPreferredSize(new Dimension(130, 130));
+					inventoryBtn.addActionListener(new InventoryListener());
+					inventoryList.put(inventoryBtn, rs.getString("inventory_name"));
+					inventoryPanel.add(inventoryBtn);
+				}
+				inventoryPanel.updateUI();
 			}
-			inventoryPanel.updateUI();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -450,7 +466,7 @@ class StorePanel extends JPanel{
 				modifID.setVisible(false);
 				modifDateLbl.setVisible(false);
 				modifDate.setVisible(false);
-				modifOK.setText("등록하기");
+				modifOK.setIcon(new ImageIcon("image/store/confirm.png"));
 				modifID.setText("");
 				modifName.setText("");
 				modifUnit.setText("");
@@ -463,7 +479,7 @@ class StorePanel extends JPanel{
 				modifID.setVisible(true);
 				modifDateLbl.setVisible(true);
 				modifDate.setVisible(true);
-				modifOK.setText("수정하기");
+				modifOK.setIcon(new ImageIcon("image/store/modify.png"));
 				modifAction.run();
 			}
 		}
