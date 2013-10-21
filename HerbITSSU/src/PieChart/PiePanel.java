@@ -18,6 +18,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import Database.DBGenerator;
+import Integrated.ImagePanel;
 
 
 public class PiePanel implements ActionListener
@@ -34,20 +35,23 @@ public class PiePanel implements ActionListener
 	JPanel datePanel = new JPanel(new GridLayout(1, 3, 25, 25));
 	//JPanel selectPanel = new JPanel(new GridLayout(4, 1, 0, 0));
 	JPanel bottomPanel = new JPanel(new GridLayout(3, 1, 25, 25));
+	JPanel bottom_2nd_Panel = new JPanel(new GridLayout(1, 3, 30, 30));
 	JPanel originalPanel;
 	JComboBox yearBox, monthBox, dayBox;
 	Font bigFont = new Font("굴림", Font.PLAIN, 25);
 	public PiePanel(String title, String label, JPanel leftPanel, DBGenerator db){
 		//super(title);
-		this.targetPanel = new JPanel();
+		this.targetPanel = new ImagePanel("image/admin/background_2.png");
 		this.originalPanel = leftPanel;
 		leftPanel.removeAll();
 		leftPanel.setVisible(false);
-		leftPanel.setLayout(new FlowLayout());
+		leftPanel.setLayout(null);
 		leftPanel.add(this.targetPanel);
+		
+		
 		leftPanel.setVisible(true);
 		
-		targetPanel.setLayout(new GridLayout(4,1, 20, 20));
+		targetPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 200, 50));
 		//this.setSize(400,300);
 		
 		//창닫기 버튼 클릭시 프레임 종료
@@ -55,7 +59,9 @@ public class PiePanel implements ActionListener
 
 		//버튼생성
 		ImageIcon imageIcon;
-		btn[0] = new JButton("시간 단위");
+		imageIcon = new ImageIcon("image/admin/hour_hour.png");
+		btn[0] = new JButton(imageIcon);
+		btn[0].setPreferredSize(new Dimension(imageIcon.getIconWidth(), imageIcon.getIconHeight()));
 		btn[0].setFont(bigFont);
 		btn[0].addActionListener(this);
 		imageIcon = new ImageIcon("image/admin/day_day.png");
@@ -78,6 +84,11 @@ public class PiePanel implements ActionListener
 		btn[4].setPreferredSize(new Dimension(imageIcon.getIconWidth(), imageIcon.getIconHeight()));
 		btn[4].setFont(bigFont);
 		btn[4].addActionListener(this);
+		btn[0].setBackground(new Color(0x898a8c));
+		btn[1].setBackground(new Color(0x898a8c));
+		btn[2].setBackground(new Color(0x898a8c));
+		btn[3].setBackground(new Color(0x898a8c));
+		btn[4].setBackground(new Color(0x898a8c));
 		imageIcon = new ImageIcon("image/admin/search.png");
 		btn_2nd = new JButton(imageIcon);
 		btn_2nd.setPreferredSize(new Dimension(imageIcon.getIconWidth(), imageIcon.getIconHeight()));
@@ -162,10 +173,17 @@ public class PiePanel implements ActionListener
 		imageIcon = new ImageIcon("image/admin/choice_day.png");
 		JLabel chooseDay = new JLabel(imageIcon);
 		chooseDay.setPreferredSize(new Dimension(imageIcon.getIconWidth(), imageIcon.getIconHeight()));
+		
+		targetPanel.setBounds(300, 100, targetPanel.getWidth(), targetPanel.getHeight());
 		bottomPanel.add(chooseDay);
 				
 		bottomPanel.add(datePanel);
-		bottomPanel.add( btn_2nd );
+		bottom_2nd_Panel.add(new JLabel(""));
+		btn_2nd.setBackground(new Color(0x898a8c));
+		bottom_2nd_Panel.add(btn_2nd);
+		bottom_2nd_Panel.add(new JLabel(""));
+		bottom_2nd_Panel.setBackground(new Color(0x898a8c));
+		bottomPanel.add( bottom_2nd_Panel );
 		
 		//창보이기
 		datePanel.setBackground(new Color(0x898a8c));
@@ -173,7 +191,7 @@ public class PiePanel implements ActionListener
 		bottom2P.setBackground(new Color(0x898a8c));
 		bottom3P.setBackground(new Color(0x898a8c));
 		bottomPanel.setBackground(new Color(0x898a8c));
-		targetPanel.setBackground(new Color(0x898a8c));
+		
 		targetPanel.setVisible(false);
 		targetPanel.setVisible(true);
 	}
@@ -234,7 +252,7 @@ public class PiePanel implements ActionListener
 		
 		targetPanel.removeAll();
 		targetPanel.setVisible(false);
-		targetPanel.setLayout(new GridLayout(1, 1, 25, 25));
+		//targetPanel.setLayout(new GridLayout(1, 1, 25, 25));
 		targetPanel.add(bottomPanel);
 		targetPanel.setVisible(true);
 		unitIndex = btnIndex;		//단위를 저장

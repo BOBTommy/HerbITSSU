@@ -38,7 +38,7 @@ public class AdminPanel extends JPanel {
 	private JPanel leftPanel; /* 그래프와 테이블을 가지는 패널 */
 	private JPanel rightPanel; /* 버튼을 가지는 패널 */
 
-	private JButton pie, bar, table, add, mody;
+		private JButton pie, bar, table, add, mody;
 	private JButton aprioriBtn; //Apriori 예측 모듈 실행 버튼
 	private Font bigFont = new Font("굴림", Font.BOLD, 20);
 	private JButton ExcelExportBtn;

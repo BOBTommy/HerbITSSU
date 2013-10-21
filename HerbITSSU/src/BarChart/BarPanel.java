@@ -18,6 +18,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import Database.DBGenerator;
+import Integrated.ImagePanel;
 
 
 public class BarPanel implements ActionListener
@@ -32,33 +33,39 @@ public class BarPanel implements ActionListener
 	int unitIndex;
 	DBGenerator db;
 	LinkedList<String> yearList, monthList, dayList; 
-	JPanel datePanel = new JPanel(new GridLayout(1, 3, 25, 25));
+	JPanel datePanel = new JPanel(new GridLayout(1, 3, 25, 5));
 	//JPanel selectPanel = new JPanel(new GridLayout(4, 1, 0, 0));
-	JPanel bottomPanel = new JPanel(new GridLayout(6, 1, 25, 25));
+	JPanel bottomPanel = new JPanel(new GridLayout(6, 1, 30, 5));
 	JComboBox yearBox, monthBox, dayBox;
 	Font bigFont = new Font("굴림", Font.PLAIN, 25);
 	public BarPanel(String title, String label, JPanel leftPanel, DBGenerator db){
 		//super(title);
-		this.targetPanel = new JPanel();
-		leftPanel.setLayout(new FlowLayout());
+		this.targetPanel = new ImagePanel("image/admin/background_2.png");
+		
+		leftPanel.setLayout(null);
+		leftPanel.setSize(1054, 900);
 		leftPanel.removeAll();
 		//leftPanel.setLayout(null);
 		//leftPanel.setSize(1057, 900);
 		leftPanel.setVisible(false);
-		
 		leftPanel.add(this.targetPanel);
 		leftPanel.setVisible(true);
 		originalPanel = leftPanel;
 		
-		targetPanel.setLayout(new GridLayout(4,1, 20, 20));
+		targetPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 200, 50));
+		targetPanel.setBounds(300, 100, targetPanel.getWidth(), targetPanel.getHeight());
+		//new GridLayout(4,1, 20, 20));
 		//this.setSize(400,300);
+		
 		
 		//창닫기 버튼 클릭시 프레임 종료
 		//this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
 		//버튼생성
 		ImageIcon imageIcon;
-		btn[0] = new JButton("시간 단위");
+		imageIcon = new ImageIcon("image/admin/hour_hour.png");
+		btn[0] = new JButton(imageIcon);
+		btn[0].setPreferredSize(new Dimension(imageIcon.getIconWidth(), imageIcon.getIconHeight()));
 		btn[0].setFont(bigFont);
 		btn[0].addActionListener(this);
 		imageIcon = new ImageIcon("image/admin/day_day.png");
@@ -121,6 +128,12 @@ public class BarPanel implements ActionListener
 		bottom2P.setLayout(new GridLayout(1, 2, 25, 25));
 		JPanel bottom3P = new JPanel();
 		bottom3P.setLayout(new GridLayout(1, 2, 25, 25));
+		
+		btn[0].setBackground(new Color(0x898a8c));
+		btn[1].setBackground(new Color(0x898a8c));
+		btn[2].setBackground(new Color(0x898a8c));
+		btn[3].setBackground(new Color(0x898a8c));
+		btn[4].setBackground(new Color(0x898a8c));
 		bottom1P.add(btn[0]);
 		bottom1P.add(btn[1]);
 		bottom2P.add(btn[2]);
@@ -180,6 +193,7 @@ public class BarPanel implements ActionListener
 		JLabel chooseDay = new JLabel(imageIcon);
 		chooseDay.setPreferredSize(new Dimension(imageIcon.getIconWidth(), imageIcon.getIconHeight()));
 		chooseDay.setFont(bigFont);
+		
 		bottomPanel.add(chooseDay);
 				
 		bottomPanel.add(datePanel);
@@ -187,14 +201,18 @@ public class BarPanel implements ActionListener
 		bottomPanel.add( btn_2nd[1] );
 		bottomPanel.add( btn_2nd[2] );
 		bottomPanel.add( btn_2nd[3] );
-		
+		btn_2nd[0].setBackground(new Color(0x898a8c));
+		btn_2nd[1].setBackground(new Color(0x898a8c));
+		btn_2nd[2].setBackground(new Color(0x898a8c));
+		btn_2nd[3].setBackground(new Color(0x898a8c));
 		//창보이기
 		datePanel.setBackground(new Color(0x898a8c));
 		bottom1P.setBackground(new Color(0x898a8c));
 		bottom2P.setBackground(new Color(0x898a8c));
 		bottom3P.setBackground(new Color(0x898a8c));
 		bottomPanel.setBackground(new Color(0x898a8c));
-		targetPanel.setBackground(new Color(0x898a8c));
+		
+		
 		targetPanel.setVisible(false);
 		targetPanel.setVisible(true);
 	}
@@ -261,10 +279,10 @@ public class BarPanel implements ActionListener
 			if (source == btn[btnIndex])
 				break;
 		}
-		
+		//originalPanel.setLayout(new FlowLayout());
 		targetPanel.removeAll();
 		targetPanel.setVisible(false);
-		targetPanel.setLayout(new GridLayout(1, 1, 25, 25));
+	//	targetPanel.setLayout(new GridLayout(1, 1, 25, 25));
 		targetPanel.add(bottomPanel);
 		targetPanel.setVisible(true);
 		unitIndex = btnIndex;		//단위를 저장

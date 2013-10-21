@@ -1,7 +1,10 @@
 package Integrated;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.ResultSet;
@@ -106,6 +109,9 @@ class OrderPanel extends JPanel {
 		//OrderListPanel
 		orderListTableScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		orderListTableScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		orderListTable.setFont(new Font("Malgun Gothic", Font.PLAIN, 20));
+		orderListTable.setRowHeight(30);
+
 		updateOrderTable();
 				
 		//PayPanel
@@ -243,8 +249,19 @@ class OrderPanel extends JPanel {
 			JButton menuBtn;
 			while (rs.next()) {
 				//imageIcon = new ImageIcon("image/order/" + rs.getString("menu_name") + ".png");
-				menuBtn = new JButton(rs.getString("menu_name"));
-				menuBtn.setPreferredSize(new Dimension(160, 80));
+				menuBtn = new JButton();
+				String text = rs.getString("menu_name") ;
+				int idx = text.indexOf("(");
+				if (idx != -1) {
+					text = text.substring(0, idx) + 
+							"<br>" +
+							text.substring(idx);
+				}
+				menuBtn.setText("<html><body style='text-align:center;'>" + text + "</body></html>");				
+				menuBtn.setPreferredSize(new Dimension(160, 60));
+				menuBtn.setMargin(new Insets(0,0,0,0));
+				menuBtn.setBackground(new Color(255,255,255));
+				
 				menuBtn.addActionListener(new menuListener());
 				menuList.put(menuBtn, rs.getString("menu_name"));
 				menuPanel.add(menuBtn);
@@ -284,6 +301,8 @@ class OrderPanel extends JPanel {
 		}
 		
 		orderListTableModel.setDataVector(data, columnNames);
+		orderListTable.getColumnModel().getColumn(0).setPreferredWidth(300);
+
 	}
 	
 	public void resetTotal(){	//주문취소(초기화시)

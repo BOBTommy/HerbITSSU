@@ -1,6 +1,7 @@
 package Integrated;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
@@ -138,7 +139,9 @@ public class ModyEvent {
 		leftpanel.add("North",modypane);
 		leftpanel.setVisible(false);
 		leftpanel.setVisible(true);
-		
+		mody.setBackground(new Color(255,255,255));
+		delet.setBackground(new Color(255,255,255));
+		search.setBackground(new Color(255,255,255));
 	}
 
 	private void search() {

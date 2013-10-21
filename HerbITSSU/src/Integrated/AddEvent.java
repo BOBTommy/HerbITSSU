@@ -1,9 +1,9 @@
 package Integrated;
 
+import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.SQLException;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -35,26 +35,17 @@ public class AddEvent {
 		leftpanel.setLayout(new FlowLayout());
 		leftpanel.removeAll();
 		rs = os.db.exec("select * from herb_menu;");
-		num=0;
-		try {
-			while(rs.next()){	
-				num++;
-			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		num++;
+		
 		add = new JButton("등록");
+		add.setBackground(new Color(255,255,255));
 		add.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				nameS=name.getText();
 				priceS=price.getText();
-				String s= "'" + Integer.toString(num)+"','"+nameS+"','"+priceS + "'";
+				String s= "'"+nameS+"','"+priceS + "'";
 				os.db.exec("insert herb_menu("
-						+ " menu_id," 
 						+ " menu_name,"
 						+ " menu_price,"
 						+ " menu_reg_date,"
@@ -66,9 +57,9 @@ public class AddEvent {
 						+ "'"+(String)category.getSelectedItem()+"'"
 						+ ")"
 					);
-				num++;
-		
+						
 				JOptionPane.showMessageDialog(null, "등록되었습니다");
+				
 				leftpanel.removeAll();
 				leftpanel.add(nameL);
 				leftpanel.add(name);
@@ -78,6 +69,7 @@ public class AddEvent {
 				price.setText("");
 				leftpanel.add(add);
 				leftpanel.add(category);
+				
 				
 				leftpanel.setVisible(false);
 				leftpanel.setVisible(true);
