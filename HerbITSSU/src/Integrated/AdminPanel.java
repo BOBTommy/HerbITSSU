@@ -34,7 +34,7 @@ public class AdminPanel extends JPanel {
 	private JScrollPane leftScroll, rightScroll;
 	//private String data[][] = new String[50][7];// = new String[15][4]; // 주문한 목록의 데이터셋
 	
-	private String columnNames[] = {"주문일시", "당일주문번호", "누적주문번호", "메뉴이름", "주문갯수", "매출액", "현금여부(0:카드)" };
+	private String columnNames[] = {"주문일시", "당일주문번호", "누적주문번호", "메뉴이름", "주문갯수", "매출액", "결제수단" };
 	private JPanel leftPanel; /* 그래프와 테이블을 가지는 패널 */
 	private JPanel rightPanel; /* 버튼을 가지는 패널 */
 
@@ -297,7 +297,12 @@ public class AdminPanel extends JPanel {
 				temp.add(rs.getString("menu_name"));
 				temp.add(rs.getInt("order_count"));
 				temp.add(rs.getInt("sales"));
-				temp.add(rs.getBoolean("order_cash"));
+				if(rs.getBoolean("order_cash") == true){
+					temp.add("현금");
+				}else{
+					temp.add("카드");
+				}
+				//temp.add(rs.getBoolean("order_cash"));
 				adminTableModel.addRow(temp);
 				adminTableModel.fireTableDataChanged();
 				

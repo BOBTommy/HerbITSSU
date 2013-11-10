@@ -127,7 +127,7 @@ class HerbApriori(HerbAprioriType):
         #print "#### Data Set is loaded####"
         #print self.Set
         
-        L, suppData = self.apriori(self.Set,minSupport=0.4)
+        L, suppData = self.apriori(self.Set,minSupport=0.3)
         #print "#### Support Data is set####"
         #print suppData
         
